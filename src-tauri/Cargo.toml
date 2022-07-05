@@ -2,16 +2,16 @@
 name = "pw-manager"
 version = "0.1.0"
 authors = ["Axel Lindeberg"]
-default-run = "app"
+default-run = "pw-manager"
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "1.0.2" }
+tauri-build = { version = "1.0.2", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.2", features = [ "api-all" ] }
+tauri = { version = "1.0.2", features = ["api-all"] }
 
 [features]
 # by default Tauri runs in production mode
