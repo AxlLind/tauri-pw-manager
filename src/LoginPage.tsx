@@ -1,4 +1,4 @@
-import { useRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil';
 import { pageState } from './state';
 
 function LoginPage() {

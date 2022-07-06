@@ -1,7 +1,7 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
-import { RecoilRoot, useRecoilState } from 'recoil'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { RecoilRoot, useRecoilState } from 'recoil';
 import { pageState } from './state';
 import { LoginPage } from './LoginPage';
 
