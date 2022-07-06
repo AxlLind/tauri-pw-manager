@@ -1,9 +1,9 @@
 {
   "build": {
-    "beforeBuildCommand": "",
-    "beforeDevCommand": "",
-    "devPath": "../ui",
-    "distDir": "../ui"
+    "beforeDevCommand": "npm run dev",
+    "devPath": "http://127.0.0.1:3000",
+    "beforeBuildCommand": "npm run build",
+    "distDir": "../build"
   },
   "package": {
     "productName": "pw-manager",
@@ -28,7 +28,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "tauri.pw.manager",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
