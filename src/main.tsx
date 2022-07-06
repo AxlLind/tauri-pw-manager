@@ -1,7 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
-import { RecoilRoot, atom, useRecoilState } from 'recoil'
+import { RecoilRoot, useRecoilState } from 'recoil'
+import { pageState } from './state';
+import { LoginPage } from './LoginPage';
 
 const theme = createTheme({
   palette: {
@@ -13,18 +15,16 @@ const theme = createTheme({
   },
 });
 
-const pageState = atom({
-  key: 'page',
-  default: 'login',
-});
-
 function PageRouter() {
   const [page, _] = useRecoilState(pageState);
   switch (page) {
   case 'login':
-    return <div>Click here to login</div>;
+    return <LoginPage/>;
+  case 'start':
+    return <div>You are logged in</div>;
+  default:
+    throw new Error(`Invalid page: ${page}`);
   }
-  throw new Error(`Invalid page: ${page}`);
 }
 
 const App = () => (
