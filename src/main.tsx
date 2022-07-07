@@ -5,26 +5,17 @@ import { RecoilRoot, useRecoilState } from 'recoil';
 import { pageState } from './state';
 import { LoginPage } from './LoginPage';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      light: '#649568',
-      main: '#149414',
-      dark: '#0e6b0e',
-    },
-  },
-});
+// TODO: add theme
+const theme = createTheme({});
 
-function PageRouter() {
-  const [page, _] = useRecoilState(pageState);
-  switch (page) {
-  case 'login':
-    return <LoginPage/>;
-  case 'start':
-    return <div>You are logged in</div>;
-  default:
-    throw new Error(`Invalid page: ${page}`);
-  }
+interface RouteProps {
+  page: string;
+  component: React.ComponentType;
+}
+
+function Route({ page, component }: RouteProps) {
+  const [currentPage, _] = useRecoilState(pageState);
+  return page == currentPage ? React.createElement(component) : null;
 }
 
 const App = () => (
@@ -32,7 +23,8 @@ const App = () => (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
       <RecoilRoot>
-        <PageRouter/>
+        <Route page='login' component={LoginPage} />
+        <Route page='start' component={() => <div>Hello world</div>} />
       </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>
