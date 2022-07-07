@@ -4,6 +4,8 @@ import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { RecoilRoot, useRecoilState } from 'recoil';
 import { pageState } from './state';
 import { LoginPage } from './LoginPage';
+import { SignUpPage } from './SignUpPage';
+import { StartPage } from './StartPage';
 
 // TODO: add theme
 const theme = createTheme({});
@@ -24,7 +26,8 @@ const App = () => (
       <CssBaseline/>
       <RecoilRoot>
         <Route page='login' component={LoginPage} />
-        <Route page='start' component={() => <div>Hello world</div>} />
+        <Route page='signup' component={SignUpPage} />
+        <Route page='start' component={StartPage} />
       </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>
