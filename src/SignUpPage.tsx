@@ -9,12 +9,8 @@ function SignUpPage() {
   const [password, setPassword] = useState('');
 
   const onClickCreate = () => {
-    if (email === '') {
-      return;
-    }
-    if (password === '') {
+    if (email === '' || password === '')
       return
-    }
     goToPage('start');
   };
 

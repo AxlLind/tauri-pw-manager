@@ -9,12 +9,8 @@ function LoginPage() {
   const [password, setPassword] = useState('');
 
   const onClickLogin = () => {
-    if (email === '') {
-      return;
-    }
-    if (password === '') {
+    if (email === '' || password === '')
       return
-    }
     goToPage('start');
   };
 

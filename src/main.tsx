@@ -10,14 +10,14 @@ import { StartPage } from './StartPage';
 // TODO: add theme
 const theme = createTheme({});
 
-interface RouteProps {
-  page: string;
+interface PageProps {
+  id: string;
   component: React.ComponentType;
 }
 
-function Route({ page, component }: RouteProps) {
-  const [currentPage, _] = useRecoilState(pageState);
-  return page == currentPage ? React.createElement(component) : null;
+function Page({ id, component }: PageProps) {
+  const [page, _] = useRecoilState(pageState);
+  return page == id ? React.createElement(component) : null;
 }
 
 const App = () => (
@@ -25,9 +25,9 @@ const App = () => (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
       <RecoilRoot>
-        <Route page='login' component={LoginPage} />
-        <Route page='signup' component={SignUpPage} />
-        <Route page='start' component={StartPage} />
+        <Page id='login' component={LoginPage} />
+        <Page id='signup' component={SignUpPage} />
+        <Page id='start' component={StartPage} />
       </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>
