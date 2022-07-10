@@ -3,6 +3,12 @@
   windows_subsystem = "windows"
 )]
 
+#[tauri::command]
+fn login(email: String, password: String) -> String {
+  println!("Logging in, email={email}, password={password}");
+  "session_token".to_string()
+}
+
 fn main() {
   let context = tauri::generate_context!();
   tauri::Builder::default()
@@ -11,6 +17,7 @@ fn main() {
     } else {
       tauri::Menu::default()
     })
+    .invoke_handler(tauri::generate_handler![login])
     .run(context)
     .expect("error while running tauri application");
 }
