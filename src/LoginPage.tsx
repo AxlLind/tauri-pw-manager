@@ -16,7 +16,6 @@ function LoginPage() {
       return setError('Email missing.');
     if (password === '')
       return setError('Master password missing.');
-
     const res = await login(email, password);
     if ('err' in res)
       return setError(res.err);

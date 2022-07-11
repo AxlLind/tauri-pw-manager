@@ -9,6 +9,12 @@ fn login(email: String, password: String) -> String {
   "session_token".to_string()
 }
 
+#[tauri::command]
+fn create_account(email: String, password: String) -> String {
+  println!("Creating account, email={email}, password={password}");
+  "session_token".to_string()
+}
+
 fn main() {
   let context = tauri::generate_context!();
   tauri::Builder::default()
@@ -17,7 +23,7 @@ fn main() {
     } else {
       tauri::Menu::default()
     })
-    .invoke_handler(tauri::generate_handler![login])
+    .invoke_handler(tauri::generate_handler![login, create_account])
     .run(context)
     .expect("error while running tauri application");
 }

@@ -1,16 +1,25 @@
 import { useState } from 'react';
 import { useRecoilState } from 'recoil';
-import { Grid, Button, TextField } from '@mui/material';
-import { pageState } from './state';
+import { Grid, Button, TextField, Alert } from '@mui/material';
+import { pageState, tokenState } from './state';
+import { create_account } from './backend';
 
 function SignUpPage() {
-  const [_, goToPage] = useRecoilState(pageState);
+  const [, goToPage] = useRecoilState(pageState);
+  const [, setSessionToken] = useRecoilState(tokenState);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const onClickCreate = () => {
-    if (email === '' || password === '')
-      return
+  const onClickLogin = async () => {
+    if (email === '')
+      return setError('Email missing.');
+    if (password === '')
+      return setError('Master password missing.');
+    const res = await create_account(email, password);
+    if ('err' in res)
+      return setError(res.err);
+    setSessionToken(res.token);
     goToPage('start');
   };
 
@@ -23,9 +32,15 @@ function SignUpPage() {
       <TextField label='Master Password' type='password' value={password} onChange={e => setPassword(e.target.value)} />
       <br/>
       <Grid>
-        <Button variant='contained' onClick={onClickCreate}>Create</Button>
+        <Button variant='contained' onClick={onClickLogin}>Create</Button>
         <Button onClick={() => goToPage('login')}>Go Back</Button>
       </Grid>
+      {error &&
+        <>
+        <br/>
+        <Alert severity='error'>{error}</Alert>
+        </>
+      }
     </Grid>
   );
 }
