@@ -7,8 +7,29 @@ import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
 import { StartPage } from './StartPage';
 
-// TODO: add theme
-const theme = createTheme({});
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    background: {
+      default: '#282a36',
+      paper: '#2c2f3d',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#57c7ff',
+      disabled: 'rgba(255, 255, 255, 0.5)'
+    },
+    primary: {
+      main: '#ff6ac1'
+    },
+    secondary: {
+      main: '#ff6ac1'
+    },
+  },
+  typography: {
+    fontFamily: 'Cascadia Code Mono'
+  }
+});
 
 interface PageProps {
   id: string;

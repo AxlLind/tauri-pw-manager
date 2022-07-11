@@ -27,7 +27,7 @@ function SignUpPage() {
     <Grid container alignItems='center' direction='column'>
       <h1>Tauri PW Manager</h1>
       <h3>Create an account</h3>
-      <TextField label='Email' type='email' value={email} onChange={e => setEmail(e.target.value)} autoFocus />
+      <TextField label='Email' type='email' value={email} onChange={e => setEmail(e.target.value)} />
       <br/>
       <TextField label='Master Password' type='password' value={password} onChange={e => setPassword(e.target.value)} />
       <br/>
@@ -38,7 +38,7 @@ function SignUpPage() {
       {error &&
         <>
         <br/>
-        <Alert severity='error'>{error}</Alert>
+        <Alert severity='error' onClose={() => setError('')}>{error}</Alert>
         </>
       }
     </Grid>
