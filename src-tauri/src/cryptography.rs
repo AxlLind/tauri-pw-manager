@@ -83,4 +83,15 @@ mod tests {
     let salt = b"yellow_submarine";
     assert!(pbkdf2_hmac(password, salt).is_ok());
   }
+
+  #[test]
+  fn test_blob_to_from_vec() {
+    let bytes = random_bytes::<128>().to_vec();
+    let blob = EncryptedBlob::from_bytes(&bytes).expect("should be convertable");
+    let converted_bytes = blob.to_vec();
+    assert_eq!(bytes, converted_bytes);
+
+    let too_few_bytes = [0; 28];
+    assert!(EncryptedBlob::from_bytes(&too_few_bytes).is_none());
+  }
 }
