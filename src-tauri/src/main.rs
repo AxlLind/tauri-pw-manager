@@ -3,6 +3,7 @@
   windows_subsystem = "windows"
 )]
 mod database;
+mod cryptography;
 
 #[tauri::command]
 fn login(email: String, password: String) -> String {
