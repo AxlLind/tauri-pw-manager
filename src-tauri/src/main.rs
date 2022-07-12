@@ -2,6 +2,7 @@
   all(not(debug_assertions), target_os = "windows"),
   windows_subsystem = "windows"
 )]
+mod database;
 
 #[tauri::command]
 fn login(email: String, password: String) -> String {
