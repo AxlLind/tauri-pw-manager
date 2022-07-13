@@ -14,7 +14,9 @@ static APP_FOLDER: Lazy<PathBuf> = once_cell::sync::Lazy::new(|| {
   // TODO: Handle windows here
   let home_folder = std::env::var("HOME").expect("$HOME not set!");
   let p = Path::new(&home_folder).join(".tauri-pw-manager");
-  fs::create_dir(&p).expect("Could not create app folder");
+  if !p.exists() {
+    fs::create_dir(&p).expect("Could not create app folder");
+  }
   p
 });
 
