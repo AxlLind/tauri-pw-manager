@@ -1,25 +1,23 @@
 import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { Grid, Button, TextField, Alert } from '@mui/material';
-import { pageState, tokenState } from './state';
+import { pageState } from './state';
 import { login } from './backend';
 
 function LoginPage() {
   const [, goToPage] = useRecoilState(pageState);
-  const [, setSessionToken] = useRecoilState(tokenState);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const onClickLogin = async () => {
-    if (email === '')
-      return setError('Email missing.');
+    if (username === '')
+      return setError('Username missing.');
     if (password === '')
       return setError('Master password missing.');
-    const res = await login(email, password);
-    if ('err' in res)
-      return setError(res.err);
-    setSessionToken(res.token);
+    const error = await login(username, password);
+    if (error)
+      return setError(error);
     goToPage('start');
   };
 
@@ -27,7 +25,7 @@ function LoginPage() {
     <Grid container alignItems='center' direction='column'>
       <h1>Tauri PW Manager</h1>
       <h3>Welcome back</h3>
-      <TextField label='Email' type='email' value={email} onChange={e => setEmail(e.target.value)} />
+      <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />
       <br/>
       <TextField label='Master Password' type='password' value={password} onChange={e => setPassword(e.target.value)} />
       <br/>

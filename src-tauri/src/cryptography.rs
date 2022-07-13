@@ -21,12 +21,8 @@ impl EncryptedBlob {
     Some(blob)
   }
 
-  pub fn to_vec(&self) -> Vec<u8> {
-    self.iv.iter()
-      .chain(self.tag.iter())
-      .chain(self.data.iter())
-      .copied()
-      .collect()
+  pub fn iter(&self) -> impl Iterator<Item=u8> + '_ {
+    self.iv.iter().chain(self.tag.iter()).chain(self.data.iter()).copied()
   }
 }
 
@@ -51,9 +47,10 @@ pub fn random_bytes<const SIZE: usize>() -> [u8; SIZE] {
   bytes
 }
 
-pub fn pbkdf2_hmac(password: &[u8], salt: &[u8]) -> Result<[u8; 32], ErrorStack> {
+pub fn pbkdf2_hmac(password: &[u8], salt: &[u8]) -> [u8; 32] {
   let mut key = [0; 32];
-  openssl::pkcs5::pbkdf2_hmac(password, salt, 100_000, MessageDigest::sha256(), &mut key).map(|_| key)
+  openssl::pkcs5::pbkdf2_hmac(password, salt, 100_000, MessageDigest::sha256(), &mut key).expect("pbkdf2 should not fail");
+  key
 }
 
 #[cfg(test)]
@@ -80,18 +77,10 @@ mod tests {
   }
 
   #[test]
-  fn test_pbkdf2_hmac() {
-    let password = b"MargaretThatcheris110%SEXY";
-    let salt = b"yellow_submarine";
-    assert!(pbkdf2_hmac(password, salt).is_ok());
-  }
-
-  #[test]
   fn test_blob_to_from_vec() {
     let bytes = random_bytes::<128>().to_vec();
     let blob = EncryptedBlob::from_bytes(&bytes).expect("should be convertable");
-    let converted_bytes = blob.to_vec();
-    assert_eq!(bytes, converted_bytes);
+    assert_eq!(bytes, blob.iter().collect::<Vec<_>>());
 
     let too_few_bytes = [0; 28];
     assert!(EncryptedBlob::from_bytes(&too_few_bytes).is_none());

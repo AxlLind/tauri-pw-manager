@@ -9,13 +9,13 @@ pub struct Credential {
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct CredentialsDatabase {
-  email: String,
+  username: String,
   credentials: HashMap<String, Credential>
 }
 
 impl CredentialsDatabase {
-  pub fn new(email: String) -> Self {
-    Self { email, ..Self::default() }
+  pub fn new(username: String) -> Self {
+    Self { username, ..Self::default() }
   }
 
   pub fn entry(&self, name: &str) -> Option<&Credential> {

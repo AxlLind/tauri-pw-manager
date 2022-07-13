@@ -2,21 +2,19 @@ import { invoke } from '@tauri-apps/api/tauri';
 
 type Result<Value extends string, T> = { [P in Value]: T } | { err: string };
 
-async function login(email: string, password: string): Promise<Result<'token', string>> {
+async function login(username: string, password: string): Promise<string | undefined> {
   try {
-    const token: string = await invoke('login', { email, password });
-    return { token };
+    await invoke('login', { username, password });
   } catch (e) {
-    return { err: e as string };
+    return e as string;
   }
 }
 
-async function create_account(email: string, password: string): Promise<Result<'token', string>> {
+async function create_account(username: string, password: string): Promise<string | undefined> {
   try {
-    const token: string = await invoke('create_account', { email, password });
-    return { token };
+    await invoke('create_account', { username, password });
   } catch (e) {
-    return { err: e as string };
+    return e as string;
   }
 }
 

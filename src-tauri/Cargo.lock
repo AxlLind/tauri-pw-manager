@@ -1906,6 +1906,7 @@ dependencies = [
 name = "pw-manager"
 version = "0.1.0"
 dependencies = [
+ "once_cell",
  "openssl",
  "serde",
  "serde_json",
