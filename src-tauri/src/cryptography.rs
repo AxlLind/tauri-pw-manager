@@ -1,5 +1,7 @@
 use openssl::{hash::MessageDigest, error::ErrorStack, symm::{encrypt_aead, Cipher, decrypt_aead}, rand::rand_bytes};
 
+const AAD_MESSAGE: &[u8] = b"Tauri PW Manager v0.0.1";
+
 #[derive(Debug, Default, Clone)]
 pub struct EncryptedBlob {
   iv: [u8; 12],
@@ -31,7 +33,7 @@ impl EncryptedBlob {
 pub fn encrypt(key: &[u8], data: &[u8]) -> Result<EncryptedBlob, ErrorStack> {
   let iv = random_bytes::<12>();
   let mut tag = [0; 16];
-  encrypt_aead(Cipher::aes_256_gcm(), key, Some(&iv), &[], data, &mut tag)
+  encrypt_aead(Cipher::aes_256_gcm(), key, Some(&iv), AAD_MESSAGE, data, &mut tag)
     .map(|v| EncryptedBlob {
       iv,
       tag,
@@ -40,7 +42,7 @@ pub fn encrypt(key: &[u8], data: &[u8]) -> Result<EncryptedBlob, ErrorStack> {
 }
 
 pub fn decrypt(key: &[u8], blob: &EncryptedBlob) -> Result<Vec<u8>, ErrorStack> {
-  decrypt_aead(Cipher::aes_256_gcm(), key, Some(&blob.iv), &[], &blob.data, &blob.tag)
+  decrypt_aead(Cipher::aes_256_gcm(), key, Some(&blob.iv), AAD_MESSAGE, &blob.data, &blob.tag)
 }
 
 pub fn random_bytes<const SIZE: usize>() -> [u8; SIZE] {
