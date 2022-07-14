@@ -18,6 +18,8 @@ impl CredentialsDatabase {
     Self { username, ..Self::default() }
   }
 
+  pub fn username(&self) -> &str { &self.username }
+
   pub fn entry(&self, name: &str) -> Option<&Credential> {
     self.credentials.get(name)
   }

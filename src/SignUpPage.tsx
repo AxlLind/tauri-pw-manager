@@ -17,7 +17,7 @@ function SignUpPage() {
       return setError('Master password missing.');
     const error = await create_account(username, password);
     if (error)
-      return setError(error);
+      return setError(error.message);
     goToPage('start');
   };
 

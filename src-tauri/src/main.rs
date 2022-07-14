@@ -4,11 +4,14 @@
 )]
 mod database;
 mod cryptography;
+mod error;
 use std::fs;
 use std::path::{Path, PathBuf};
 use once_cell::sync::Lazy;
 use cryptography::EncryptedBlob;
 use database::CredentialsDatabase;
+
+use crate::error::UserFacingError;
 
 static APP_FOLDER: Lazy<PathBuf> = once_cell::sync::Lazy::new(|| {
   // TODO: Handle windows here
@@ -21,37 +24,40 @@ static APP_FOLDER: Lazy<PathBuf> = once_cell::sync::Lazy::new(|| {
 });
 
 #[tauri::command]
-fn login(username: String, password: String) -> Result<(), &'static str> {
+fn login(username: String, password: String) -> Result<(), UserFacingError> {
   println!("Logging in, username={username}");
   let db_path = APP_FOLDER.clone().join(format!("{username}.pwdb"));
   if !db_path.exists() {
-    return Err("That username does not seem to be registered");
+    return Err(UserFacingError::InvalidCredentials);
   }
-  let bytes = fs::read(db_path).map_err(|_| "Unexpected error: Could not read the database file")?;
+  let bytes = fs::read(db_path).map_err(|_| UserFacingError::Unexpected("could not read the database file"))?;
   let mut salt = [0; 12];
   salt.copy_from_slice(&bytes[0..12]);
-  let encrypted_blob = EncryptedBlob::from_bytes(&bytes[12..]).ok_or("Invalid database file!")?;
+  let encrypted_blob = EncryptedBlob::from_bytes(&bytes[12..]).ok_or(UserFacingError::Unexpected("could not encrypt database file"))?;
   let key = cryptography::pbkdf2_hmac(&password.as_bytes(), &salt);
-  let decrypted_bytes = cryptography::decrypt(&key, &encrypted_blob).map_err(|_| "Invalid credentials.")?;
-  let db = serde_json::from_slice::<CredentialsDatabase>(&decrypted_bytes).map_err(|_| "Invalid credentials.")?;
+  let decrypted_bytes = cryptography::decrypt(&key, &encrypted_blob).map_err(|_| UserFacingError::InvalidCredentials)?;
+  let db = serde_json::from_slice::<CredentialsDatabase>(&decrypted_bytes).map_err(|_| UserFacingError::InvalidCredentials)?;
   println!("{:?}", db);
+  if db.username() != username {
+    return Err(UserFacingError::InvalidDatabase);
+  }
   Ok(())
 }
 
 #[tauri::command]
-fn create_account(username: String, password: String) -> Result<(), &'static str> {
+fn create_account(username: String, password: String) -> Result<(), UserFacingError> {
   println!("Creating account, username={username}");
   let db_path = APP_FOLDER.clone().join(format!("{username}.pwdb"));
   if db_path.exists() {
-    return Err("The username seems to already be registered");
+    return Err(UserFacingError::UsernameTaken);
   }
   let salt = cryptography::random_bytes::<12>();
   let key = cryptography::pbkdf2_hmac(&password.as_bytes(), &salt);
   let db = database::CredentialsDatabase::new(username.clone());
-  let serialized_db = serde_json::to_string(&db).map_err(|_| "Unexpected error: Could not serialize key database")?;
-  let encrypted_blob = cryptography::encrypt(&key, serialized_db.as_bytes()).map_err(|_| "Unexpected error: Failed to encrypt database")?;
+  let serialized_db = serde_json::to_string(&db).map_err(|_| UserFacingError::Unexpected("Could not serialize key database"))?;
+  let encrypted_blob = cryptography::encrypt(&key, serialized_db.as_bytes()).map_err(|_| UserFacingError::Unexpected("Failed to encrypt database"))?;
   let file_content = salt.into_iter().chain(encrypted_blob.iter()).collect::<Vec<_>>();
-  fs::write(db_path, &file_content).map_err(|_| "Unexpected error: Could not write database to file")?;
+  fs::write(db_path, &file_content).map_err(|_| UserFacingError::Unexpected("Could not write database to file"))?;
   Ok(())
 }
 
