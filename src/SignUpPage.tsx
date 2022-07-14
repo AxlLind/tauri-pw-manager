@@ -22,7 +22,7 @@ function SignUpPage() {
   };
 
   return (
-    <Grid container alignItems='center' direction='column'>
+    <Grid container alignItems='center' direction='column' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
       <h1>Tauri PW Manager</h1>
       <h3>Create an account</h3>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />
