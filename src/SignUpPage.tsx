@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRecoilState } from 'recoil';
-import { Grid, Button, TextField, Alert } from '@mui/material';
+import { Stack, Button, TextField, Alert } from '@mui/material';
 import { pageState } from './state';
 import { create_account } from './backend';
 
@@ -22,24 +22,17 @@ function SignUpPage() {
   };
 
   return (
-    <Grid container alignItems='center' direction='column' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
+    <Stack spacing={3} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
       <h1>Tauri PW Manager</h1>
       <h3>Create an account</h3>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />
-      <br/>
       <TextField label='Master Password' type='password' value={password} onChange={e => setPassword(e.target.value)} />
-      <br/>
-      <Grid>
+      <Stack direction='row' spacing={1}>
         <Button variant='contained' onClick={onClickLogin}>Create</Button>
         <Button onClick={() => goToPage('login')}>Go Back</Button>
-      </Grid>
-      {error &&
-        <>
-        <br/>
-        <Alert severity='error' onClose={() => setError('')}>{error}</Alert>
-        </>
-      }
-    </Grid>
+      </Stack>
+      {error && <Alert severity='error' onClose={() => setError('')}>{error}</Alert>}
+    </Stack>
   );
 }
 
