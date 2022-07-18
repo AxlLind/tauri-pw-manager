@@ -46,10 +46,7 @@ fn write_db_to_file(salt: &[u8], key: &[u8], db: &CredentialsDatabase, path: &Pa
 fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
   println!("Fetching credentials");
   let session_guard = session_mutex.lock()?;
-  let session = match session_guard.as_ref() {
-    Some(session) => session,
-    None => return Err(UserFacingError::InvalidCredentials),
-  };
+  let session = session_guard.as_ref().ok_or(UserFacingError::InvalidCredentials)?;
   let path = APP_FOLDER.clone().join(format!("{}.pwdb", session.username));
   if !path.exists() {
     return Err(UserFacingError::InvalidCredentials);
@@ -62,18 +59,16 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
 fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
   println!("Adding credential, name={name}, username={username}, password={password}");
   let session_guard = session_mutex.lock()?;
-  let session = match session_guard.as_ref() {
-    Some(session) => session,
-    None => return Err(UserFacingError::InvalidCredentials),
-  };
+  let session = session_guard.as_ref().ok_or(UserFacingError::InvalidCredentials)?;
   let path = APP_FOLDER.clone().join(format!("{}.pwdb", session.username));
   if !path.exists() {
     return Err(UserFacingError::InvalidCredentials);
   }
   let bytes = fs::read(&path)?;
-  let mut db = db_from_encrypted_bytes(&session.key, &bytes[12..])?;
+  let (salt, blob) = bytes.split_at(12);
+  let mut db = db_from_encrypted_bytes(&session.key, blob)?;
   db.add(name, username, password);
-  write_db_to_file(&bytes[..12], &session.key, &db, &path)
+  write_db_to_file(salt, &session.key, &db, &path)
 }
 
 #[tauri::command]
@@ -88,9 +83,9 @@ fn login(username: String, password: String, session: State<'_, Mutex<Option<Use
     return Err(UserFacingError::InvalidCredentials);
   }
   let bytes = fs::read(db_path)?;
-  let key = cryptography::pbkdf2_hmac(password.as_bytes(), &bytes[..12]);
-  let db = db_from_encrypted_bytes(&key, &bytes[12..])?;
-  println!("{:?}", db);
+  let (salt, blob) = bytes.split_at(12);
+  let key = cryptography::pbkdf2_hmac(password.as_bytes(), salt);
+  let db = db_from_encrypted_bytes(&key, blob)?;
   if db.username() != username {
     return Err(UserFacingError::InvalidDatabase);
   }
