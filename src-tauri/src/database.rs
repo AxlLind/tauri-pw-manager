@@ -1,4 +1,4 @@
-use std::collections::{HashMap, hash_map::Entry};
+use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 
 #[derive(Default, Debug, Hash, Serialize, Deserialize, Clone)]
@@ -24,13 +24,7 @@ impl CredentialsDatabase {
     self.credentials.get(name)
   }
 
-  pub fn add(&mut self, name: String, username: String, password: String) -> bool {
-    match self.credentials.entry(name) {
-      Entry::Occupied(_) => false,
-      Entry::Vacant(v) => {
-        v.insert(Credential { username, password });
-        true
-      }
-    }
+  pub fn add(&mut self, name: String, username: String, password: String) {
+    self.credentials.insert(name, Credential { username, password });
   }
 }

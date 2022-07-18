@@ -5,7 +5,9 @@ mod error;
 
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::Mutex;
 use once_cell::sync::Lazy;
+use tauri::State;
 use crate::cryptography::EncryptedBlob;
 use crate::database::CredentialsDatabase;
 use crate::error::UserFacingError;
@@ -20,41 +22,64 @@ static APP_FOLDER: Lazy<PathBuf> = once_cell::sync::Lazy::new(|| {
   app_folder
 });
 
+#[derive(Debug, Default)]
+struct UserSession {
+  username: String,
+  key: [u8; 32],
+}
+
+fn db_from_encrypted_bytes(key: &[u8], bytes: &[u8]) -> Result<CredentialsDatabase, UserFacingError> {
+  let encrypted_blob = EncryptedBlob::from_bytes(&bytes).ok_or(UserFacingError::InvalidDatabase)?;
+  let decrypted_bytes = cryptography::decrypt(&key, &encrypted_blob).map_err(|_| UserFacingError::InvalidCredentials)?;
+  serde_json::from_slice::<CredentialsDatabase>(&decrypted_bytes).map_err(|_| UserFacingError::InvalidCredentials)
+}
+
+fn write_db_to_file(salt: &[u8], key: &[u8], db: &CredentialsDatabase, path: &PathBuf) -> Result<(), UserFacingError> {
+  let serialized_db = serde_json::to_vec(&db)?;
+  let encrypted_blob = cryptography::encrypt(&key, &serialized_db)?;
+  let file_content = salt.iter().copied().chain(encrypted_blob.iter()).collect::<Vec<_>>();
+  fs::write(path, &file_content)?;
+  Ok(())
+}
+
 #[tauri::command]
-fn login(username: String, password: String) -> Result<(), UserFacingError> {
+fn login(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
   println!("Logging in, username={username}");
+  let mut session = session.lock()?;
+  if session.is_some() {
+    return Err(UserFacingError::Unexpected);
+  }
   let db_path = APP_FOLDER.clone().join(format!("{username}.pwdb"));
   if !db_path.exists() {
     return Err(UserFacingError::InvalidCredentials);
   }
   let bytes = fs::read(db_path)?;
-  let mut salt = [0; 12];
-  salt.copy_from_slice(&bytes[0..12]);
-  let encrypted_blob = EncryptedBlob::from_bytes(&bytes[12..]).ok_or(UserFacingError::InvalidDatabase)?;
-  let key = cryptography::pbkdf2_hmac(password.as_bytes(), &salt);
-  let decrypted_bytes = cryptography::decrypt(&key, &encrypted_blob).map_err(|_| UserFacingError::InvalidCredentials)?;
-  let db = serde_json::from_slice::<CredentialsDatabase>(&decrypted_bytes).map_err(|_| UserFacingError::InvalidCredentials)?;
+  let key = cryptography::pbkdf2_hmac(password.as_bytes(), &bytes[..12]);
+  let db = db_from_encrypted_bytes(&key, &bytes[12..])?;
   println!("{:?}", db);
   if db.username() != username {
     return Err(UserFacingError::InvalidDatabase);
   }
+  *session = Some(UserSession { username, key });
   Ok(())
 }
 
 #[tauri::command]
-fn create_account(username: String, password: String) -> Result<(), UserFacingError> {
+fn create_account(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
   println!("Creating account, username={username}");
-  let db_path = APP_FOLDER.clone().join(format!("{username}.pwdb"));
-  if db_path.exists() {
+  let mut session = session.lock()?;
+  if session.is_some() {
+    return Err(UserFacingError::Unexpected);
+  }
+  let path = APP_FOLDER.clone().join(format!("{username}.pwdb"));
+  if path.exists() {
     return Err(UserFacingError::UsernameTaken);
   }
   let salt = cryptography::random_bytes::<12>();
   let key = cryptography::pbkdf2_hmac(password.as_bytes(), &salt);
-  let db = database::CredentialsDatabase::new(username);
-  let serialized_db = serde_json::to_vec(&db)?;
-  let encrypted_blob = cryptography::encrypt(&key, &serialized_db)?;
-  let file_content = salt.into_iter().chain(encrypted_blob.iter()).collect::<Vec<_>>();
-  fs::write(db_path, &file_content)?;
+  let db = CredentialsDatabase::new(username.clone());
+  write_db_to_file(&salt, &key, &db, &path)?;
+  *session = Some(UserSession { username, key });
   Ok(())
 }
 
@@ -66,7 +91,8 @@ fn main() {
     } else {
       tauri::Menu::default()
     })
-    .invoke_handler(tauri::generate_handler![login, create_account])
+    .manage(Mutex::<Option::<UserSession>>::default())
+    .invoke_handler(tauri::generate_handler![login, create_account, fetch_credentials, add_credentials])
     .run(context)
     .expect("error while running tauri application");
 }
