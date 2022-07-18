@@ -40,7 +40,7 @@ impl Serialize for UserFacingError {
   fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
     let mut json_err = serializer.serialize_map(Some(2))?;
     json_err.serialize_entry("key", self.key())?;
-    json_err.serialize_entry("message", self.message())?;
+    json_err.serialize_entry("error", self.message())?;
     json_err.end()
   }
 }
