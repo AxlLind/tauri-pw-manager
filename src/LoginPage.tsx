@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { Stack, Button, TextField, Alert } from '@mui/material';
 import { pageState } from './state';
-import { login } from './backend';
+import { backend } from './backend';
 
 function LoginPage() {
   const [, goToPage] = useRecoilState(pageState);
@@ -15,7 +15,7 @@ function LoginPage() {
       return setError('Username missing.');
     if (password === '')
       return setError('Master password missing.');
-    const err = await login(username, password);
+    const err = await backend.login(username, password);
     if (err)
       return setError(err.error);
     goToPage('start');

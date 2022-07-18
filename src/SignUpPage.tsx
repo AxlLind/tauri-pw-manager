@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { Stack, Button, TextField, Alert } from '@mui/material';
 import { pageState } from './state';
-import { create_account } from './backend';
+import { backend } from './backend';
 
 function SignUpPage() {
   const [, goToPage] = useRecoilState(pageState);
@@ -15,7 +15,7 @@ function SignUpPage() {
       return setError('Username missing.');
     if (password === '')
       return setError('Master password missing.');
-    const err = await create_account(username, password);
+    const err = await backend.create_account(username, password);
     if (err)
       return setError(err.error);
     goToPage('start');
