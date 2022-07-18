@@ -15,9 +15,9 @@ function LoginPage() {
       return setError('Username missing.');
     if (password === '')
       return setError('Master password missing.');
-    const error = await login(username, password);
-    if (error)
-      return setError(error.message);
+    const err = await login(username, password);
+    if (err)
+      return setError(err.error);
     goToPage('start');
   };
 

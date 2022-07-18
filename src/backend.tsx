@@ -1,26 +1,20 @@
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke, InvokeArgs } from '@tauri-apps/api/tauri';
 
 interface BackendError {
   key: "invalid_credentials" | "invalid_database" | "username_taken" | "unexpected"
-  message: string
+  error: string
 }
 
-type Result<Value extends string, T> = { [P in Value]: T } | BackendError;
-
-async function login(username: string, password: string): Promise<BackendError | undefined> {
+async function call<T = undefined>(fn: string, args?: InvokeArgs): Promise<T | BackendError> {
   try {
-    await invoke('login', { username, password });
+    return await invoke(fn, args);
   } catch (e) {
     return e as BackendError;
   }
 }
 
-async function create_account(username: string, password: string): Promise<BackendError | undefined> {
-  try {
-    await invoke('create_account', { username, password });
-  } catch (e) {
-    return e as BackendError;
-  }
-}
+const login = (username: string, password: string) => call('login', { username, password });
+
+const create_account = (username: string, password: string) => call('create_account', { username, password });
 
 export { login, create_account };
