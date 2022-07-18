@@ -25,6 +25,8 @@ async function call<T = undefined>(fn: string, args?: InvokeArgs): Promise<T | B
 
 const login = (username: string, password: string) => call('login', { username, password });
 
+const logout = () => call('logout');
+
 const create_account = (username: string, password: string) => call('create_account', { username, password });
 
 const fetch_credentials = () => call<CredentialsDatabase>('fetch_credentials');
@@ -32,4 +34,4 @@ const fetch_credentials = () => call<CredentialsDatabase>('fetch_credentials');
 const add_credentials = (name: string, username: string, password: string) => call('add_credentials', {name, username, password});
 
 // export as an object to enforce 'backend.function_call'
-export const backend = { login, create_account, fetch_credentials, add_credentials };
+export const backend = { login, logout, create_account, fetch_credentials, add_credentials };

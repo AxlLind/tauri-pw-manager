@@ -99,6 +99,14 @@ fn login(username: String, password: String, session: State<'_, Mutex<Option<Use
 }
 
 #[tauri::command]
+fn logout(session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
+  let mut session = session.lock()?;
+  println!("Logging out, logged_in={}", session.is_some());
+  *session = None;
+  Ok(())
+}
+
+#[tauri::command]
 fn create_account(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
   println!("Creating account, username={username}");
   let mut session = session.lock()?;
@@ -126,7 +134,7 @@ fn main() {
       tauri::Menu::default()
     })
     .manage(Mutex::<Option::<UserSession>>::default())
-    .invoke_handler(tauri::generate_handler![login, create_account, fetch_credentials, add_credentials])
+    .invoke_handler(tauri::generate_handler![login, logout, create_account, fetch_credentials, add_credentials])
     .run(context)
     .expect("error while running tauri application");
 }
