@@ -31,7 +31,7 @@ const create_account = (username: string, password: string) => call('create_acco
 
 const fetch_credentials = () => call<CredentialsDatabase>('fetch_credentials');
 
-const add_credentials = (name: string, username: string, password: string) => call('add_credentials', {name, username, password});
+const add_credentials = (name: string, username: string, password: string) => call<CredentialsDatabase>('add_credentials', {name, username, password});
 
 // export as an object to enforce 'backend.function_call'
 export const backend = { login, logout, create_account, fetch_credentials, add_credentials };

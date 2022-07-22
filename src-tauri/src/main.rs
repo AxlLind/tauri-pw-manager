@@ -56,7 +56,7 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
 }
 
 #[tauri::command]
-fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
+fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
   println!("Adding credential, name={name}, username={username}, password={password}");
   let session_guard = session_mutex.lock()?;
   let session = session_guard.as_ref().ok_or(UserFacingError::InvalidCredentials)?;
@@ -68,7 +68,8 @@ fn add_credentials(name: String, username: String, password: String, session_mut
   let (salt, blob) = bytes.split_at(12);
   let mut db = db_from_encrypted_bytes(&session.key, blob)?;
   db.add(name, username, password);
-  write_db_to_file(salt, &session.key, &db, &path)
+  write_db_to_file(salt, &session.key, &db, &path)?;
+  Ok(db)
 }
 
 #[tauri::command]

@@ -22,8 +22,7 @@ function StartPage() {
     const res = await backend.add_credentials(name, username, password);
     if (res?.error)
       return setError(res.error);
-    credentials.credentials[name] = {username, password};
-    setCredentials({...credentials});
+    setCredentials(res);
   };
 
   return (
@@ -36,7 +35,7 @@ function StartPage() {
       <Button variant='contained' onClick={onClickAddCredential}>Add</Button>
       <h3>Credentials</h3>
       {
-        credentials && Object.entries(credentials.credentials).map(([name, {username, password}]) =>
+        Object.entries(credentials.credentials).map(([name, {username, password}]) =>
           <Stack spacing={1} direction='row'>
             <div>{name}</div>
             <div>{username}</div>
