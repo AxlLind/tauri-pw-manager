@@ -1,11 +1,11 @@
 import { invoke, InvokeArgs } from '@tauri-apps/api/tauri';
 
-interface BackendError {
+export interface BackendError {
   key: "invalid_credentials" | "invalid_database" | "username_taken" | "unexpected"
   error: string
 }
 
-export type CredentialsDatabase = {
+export interface CredentialsDatabase {
   username: string,
   credentials: {
     [key: string]: {
@@ -17,21 +17,18 @@ export type CredentialsDatabase = {
 
 async function call<T = undefined>(fn: string, args?: InvokeArgs): Promise<T | BackendError> {
   try {
-    return await invoke(fn, args);
+    return await invoke(fn, args) as T;
   } catch (e) {
     return e as BackendError;
   }
 }
 
-const login = (username: string, password: string) => call('login', { username, password });
+export const login = (username: string, password: string) => call('login', { username, password });
 
-const logout = () => call('logout');
+export const logout = () => call('logout');
 
-const create_account = (username: string, password: string) => call('create_account', { username, password });
+export const create_account = (username: string, password: string) => call('create_account', { username, password });
 
-const fetch_credentials = () => call<CredentialsDatabase>('fetch_credentials');
+export const fetch_credentials = () => call<CredentialsDatabase>('fetch_credentials');
 
-const add_credentials = (name: string, username: string, password: string) => call<CredentialsDatabase>('add_credentials', {name, username, password});
-
-// export as an object to enforce 'backend.function_call'
-export const backend = { login, logout, create_account, fetch_credentials, add_credentials };
+export const add_credentials = (name: string, username: string, password: string) => call<CredentialsDatabase>('add_credentials', { name, username, password });

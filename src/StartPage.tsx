@@ -1,7 +1,7 @@
 import { Alert, Button, Stack, TextField, Dialog } from '@mui/material';
 import { useState } from 'react';
 import { useAsyncEffect } from './utils';
-import { backend, CredentialsDatabase } from './backend';
+import { fetch_credentials, add_credentials, CredentialsDatabase } from './backend';
 
 function StartPage() {
   const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
@@ -26,7 +26,6 @@ function StartPage() {
   };
 
   const onClickAddCredentials = async () => {
-    const res = await backend.add_credentials(name, username, password);
     closeDialog();
     if (name === '')
       return setError('Name missing.');
@@ -34,6 +33,7 @@ function StartPage() {
       return setError('Usename missing.');
     if (password === '')
       return setError('Password missing.');
+    const res = await add_credentials(name, username, password);
     if ('error' in res)
       return setError(res.error);
     setCredentials(res);
