@@ -58,6 +58,9 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
 #[tauri::command]
 fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
   println!("Adding credential, name={name}, username={username}, password={password}");
+  if name.is_empty() || username.is_empty() || password.is_empty() {
+    return Err(UserFacingError::InvalidCredentials);
+  }
   let session_guard = session_mutex.lock()?;
   let session = session_guard.as_ref().ok_or(UserFacingError::InvalidCredentials)?;
   let path = APP_FOLDER.clone().join(format!("{}.pwdb", session.username));
@@ -75,6 +78,9 @@ fn add_credentials(name: String, username: String, password: String, session_mut
 #[tauri::command]
 fn login(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
   println!("Logging in, username={username}");
+  if username.is_empty() || password.is_empty() {
+    return Err(UserFacingError::InvalidCredentials);
+  }
   let mut session = session.lock()?;
   if session.is_some() {
     return Err(UserFacingError::Unexpected);
@@ -105,6 +111,9 @@ fn logout(session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFaci
 #[tauri::command]
 fn create_account(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
   println!("Creating account, username={username}");
+  if username.is_empty() || password.is_empty() {
+    return Err(UserFacingError::InvalidCredentials);
+  }
   let mut session = session.lock()?;
   if session.is_some() {
     return Err(UserFacingError::Unexpected);
