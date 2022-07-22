@@ -1,7 +1,7 @@
 import { invoke, InvokeArgs } from '@tauri-apps/api/tauri';
 
 export interface BackendError {
-  key: "invalid_credentials" | "invalid_database" | "username_taken" | "unexpected"
+  key: "invalid_credentials" | "invalid_database" | "invalid_parameter" | "username_taken" | "unexpected"
   error: string
 }
 

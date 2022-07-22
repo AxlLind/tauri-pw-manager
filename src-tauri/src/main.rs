@@ -43,6 +43,17 @@ fn write_db_to_file(salt: &[u8], key: &[u8], db: &CredentialsDatabase, path: &Pa
 }
 
 #[tauri::command]
+fn generate_password(alphabet: String, len: usize) -> Result<String, UserFacingError> {
+  if alphabet.is_empty() || !alphabet.is_ascii() {
+    return Err(UserFacingError::InvalidParameter);
+  }
+  if len == 0 || len > 2056 {
+    return Err(UserFacingError::InvalidParameter);
+  }
+  Ok(cryptography::generate_password(alphabet.as_bytes(), len))
+}
+
+#[tauri::command]
 fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
   println!("Fetching credentials");
   let session_guard = session_mutex.lock()?;
@@ -138,7 +149,7 @@ fn main() {
   tauri::Builder::default()
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .manage(Mutex::<Option<UserSession>>::default())
-    .invoke_handler(tauri::generate_handler![login, logout, create_account, fetch_credentials, add_credentials])
+    .invoke_handler(tauri::generate_handler![login, logout, create_account, fetch_credentials, add_credentials, generate_password])
     .run(context)
     .expect("error while running tauri application");
 }

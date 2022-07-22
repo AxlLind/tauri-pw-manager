@@ -53,6 +53,17 @@ pub fn pbkdf2_hmac(password: &[u8], salt: &[u8]) -> [u8; 32] {
   key
 }
 
+pub fn generate_password(alphabet: &[u8], len: usize) -> String {
+  assert!(alphabet.len() < 256);
+  let mod_ceil = alphabet.len().next_power_of_two();
+  (0..len).map(|_| loop {
+    let [b] = random_bytes::<1>();
+    if let Some(&c) = alphabet.get(b as usize % mod_ceil) {
+      return c as char;
+    }
+  }).collect()
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -84,5 +95,17 @@ mod tests {
 
     let too_few_bytes = [0; 28];
     assert!(EncryptedBlob::from_bytes(&too_few_bytes).is_none());
+  }
+
+  #[test]
+  fn test_generate_password() {
+    assert_eq!(generate_password(b"a", 5), "aaaaa");
+
+    const ASCII_PRINTABLE: &[u8] = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~";
+    let pw = generate_password(ASCII_PRINTABLE, 2000);
+    for c in pw.bytes() {
+      assert!(ASCII_PRINTABLE.contains(&c));
+    }
+    assert_eq!(pw.len(), 2000);
   }
 }

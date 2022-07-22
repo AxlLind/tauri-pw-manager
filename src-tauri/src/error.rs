@@ -5,6 +5,7 @@ use serde::{Serialize, ser::SerializeMap};
 pub enum UserFacingError {
   InvalidCredentials,
   InvalidDatabase,
+  InvalidParameter,
   UsernameTaken,
   Unexpected,
 }
@@ -14,6 +15,7 @@ impl UserFacingError {
     match self {
       UserFacingError::InvalidCredentials => "invalid credentials",
       UserFacingError::InvalidDatabase => "corrupt key database",
+      UserFacingError::InvalidParameter => "invalid parameter",
       UserFacingError::UsernameTaken => "username already registered",
       UserFacingError::Unexpected => "unexpected error occurred"
     }
@@ -23,6 +25,7 @@ impl UserFacingError {
     match self {
       UserFacingError::InvalidCredentials => "invalid_credentials",
       UserFacingError::InvalidDatabase => "invalid_database",
+      UserFacingError::InvalidParameter => "invalid_parameter",
       UserFacingError::UsernameTaken => "username_taken",
       UserFacingError::Unexpected => "unexpected",
     }
