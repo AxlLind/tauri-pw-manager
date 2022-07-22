@@ -32,21 +32,19 @@ const theme = createTheme({
 });
 
 function Page({ id, component }: { id: string, component: React.ComponentType }) {
-  const [page, _] = useRecoilState(pageState);
+  const [page,] = useRecoilState(pageState);
   return page == id ? React.createElement(component) : null;
 }
 
 const App = () => (
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline/>
-      <RecoilRoot>
-        <Page id='login' component={LoginPage} />
-        <Page id='signup' component={SignUpPage} />
-        <Page id='start' component={StartPage} />
-      </RecoilRoot>
-    </ThemeProvider>
-  </React.StrictMode>
+  <ThemeProvider theme={theme}>
+    <CssBaseline/>
+    <RecoilRoot>
+      <Page id='login' component={LoginPage} />
+      <Page id='signup' component={SignUpPage} />
+      <Page id='start' component={StartPage} />
+    </RecoilRoot>
+  </ThemeProvider>
 );
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<App/>);
