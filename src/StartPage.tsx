@@ -1,5 +1,6 @@
 import { Alert, Button, Stack, TextField, Dialog } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useAsyncEffect } from './utils';
 import { backend, CredentialsDatabase } from './backend';
 
 function StartPage() {
@@ -10,13 +11,11 @@ function StartPage() {
   const [password, setPassword] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const res = await backend.fetch_credentials();
-      if ('error' in res)
-        return setError(res.error);
-      setCredentials(res)
-    })();
+  useAsyncEffect(async () => {
+    const res = await fetch_credentials();
+    if ('error' in res)
+      return setError(res.error);
+    setCredentials(res)
   }, []);
 
   const closeDialog = () => {

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { Stack, Button, TextField, Alert } from '@mui/material';
+import { useAsyncEffect } from './utils';
 import { pageState } from './state';
 import { backend } from './backend';
 
@@ -10,7 +11,7 @@ function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  useEffect(() => { backend.logout(); }, []);
+  useAsyncEffect(logout, []);
 
   const onClickLogin = async () => {
     if (username === '')

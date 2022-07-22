@@ -31,12 +31,7 @@ const theme = createTheme({
   }
 });
 
-interface PageProps {
-  id: string;
-  component: React.ComponentType;
-}
-
-function Page({ id, component }: PageProps) {
+function Page({ id, component }: { id: string, component: React.ComponentType }) {
   const [page, _] = useRecoilState(pageState);
   return page == id ? React.createElement(component) : null;
 }
