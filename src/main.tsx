@@ -27,7 +27,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Cascadia Code Mono'
+    fontFamily: 'Cascadia Code'
   }
 });
 
