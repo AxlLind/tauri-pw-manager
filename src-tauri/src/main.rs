@@ -15,12 +15,12 @@ use crate::error::UserFacingError;
 static APP_FOLDER: Lazy<PathBuf> = once_cell::sync::Lazy::new(|| {
   // TODO: Handle windows here
   let home_folder = std::env::var("HOME").expect("$HOME not set!");
-  let app_folder = Path::new(&home_folder).join(".tauri-pw-manager");
-  if !app_folder.exists() {
-    fs::create_dir(&app_folder).expect("Could not create app folder");
-  }
-  app_folder
+  Path::new(&home_folder).join(".tauri-pw-manager")
 });
+
+fn user_db_file(username: &str) -> PathBuf {
+  APP_FOLDER.join(format!("{}.pwdb", username))
+}
 
 #[derive(Debug, Default)]
 struct UserSession {
@@ -47,7 +47,7 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
   println!("Fetching credentials");
   let session_guard = session_mutex.lock()?;
   let session = session_guard.as_ref().ok_or(UserFacingError::InvalidCredentials)?;
-  let path = APP_FOLDER.clone().join(format!("{}.pwdb", session.username));
+  let path = user_db_file(&session.username);
   if !path.exists() {
     return Err(UserFacingError::InvalidCredentials);
   }
@@ -63,7 +63,7 @@ fn add_credentials(name: String, username: String, password: String, session_mut
   }
   let session_guard = session_mutex.lock()?;
   let session = session_guard.as_ref().ok_or(UserFacingError::InvalidCredentials)?;
-  let path = APP_FOLDER.clone().join(format!("{}.pwdb", session.username));
+  let path = user_db_file(&session.username);
   if !path.exists() {
     return Err(UserFacingError::InvalidCredentials);
   }
@@ -85,7 +85,7 @@ fn login(username: String, password: String, session: State<'_, Mutex<Option<Use
   if session.is_some() {
     return Err(UserFacingError::Unexpected);
   }
-  let db_path = APP_FOLDER.clone().join(format!("{username}.pwdb"));
+  let db_path = user_db_file(&username);
   if !db_path.exists() {
     return Err(UserFacingError::InvalidCredentials);
   }
@@ -118,7 +118,7 @@ fn create_account(username: String, password: String, session: State<'_, Mutex<O
   if session.is_some() {
     return Err(UserFacingError::Unexpected);
   }
-  let path = APP_FOLDER.clone().join(format!("{username}.pwdb"));
+  let path = user_db_file(&username);
   if path.exists() {
     return Err(UserFacingError::UsernameTaken);
   }
@@ -131,14 +131,13 @@ fn create_account(username: String, password: String, session: State<'_, Mutex<O
 }
 
 fn main() {
+  if !APP_FOLDER.exists() {
+    fs::create_dir(&*APP_FOLDER).expect("could not create app folder");
+  }
   let context = tauri::generate_context!();
   tauri::Builder::default()
-    .menu(if cfg!(target_os = "macos") {
-      tauri::Menu::os_default(&context.package_info().name)
-    } else {
-      tauri::Menu::default()
-    })
-    .manage(Mutex::<Option::<UserSession>>::default())
+    .menu(tauri::Menu::os_default(&context.package_info().name))
+    .manage(Mutex::<Option<UserSession>>::default())
     .invoke_handler(tauri::generate_handler![login, logout, create_account, fetch_credentials, add_credentials])
     .run(context)
     .expect("error while running tauri application");
