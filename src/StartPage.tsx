@@ -1,4 +1,4 @@
-import { Alert, Button, Stack, TextField } from '@mui/material';
+import { Alert, Button, Stack, TextField, Dialog } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { backend, CredentialsDatabase } from './backend';
 
@@ -8,6 +8,7 @@ function StartPage() {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -18,9 +19,23 @@ function StartPage() {
     })();
   }, []);
 
-  const onClickAddCredential = async () => {
+  const closeDialog = () => {
+    setName('');
+    setUsername('');
+    setPassword('');
+    setDialogOpen(false);
+  };
+
+  const onClickAddCredentials = async () => {
     const res = await backend.add_credentials(name, username, password);
-    if (res?.error)
+    closeDialog();
+    if (name === '')
+      return setError('Name missing.');
+    if (username === '')
+      return setError('Usename missing.');
+    if (password === '')
+      return setError('Password missing.');
+    if ('error' in res)
       return setError(res.error);
     setCredentials(res);
   };
@@ -28,11 +43,6 @@ function StartPage() {
   return (
     <Stack spacing={3} alignItems='center'>
       <h1>Tauri PW Manager</h1>
-      <h3>Add credential</h3>
-      <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
-      <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
-      <TextField label='Password' value={password} onChange={e => setPassword(e.target.value)}/>
-      <Button variant='contained' onClick={onClickAddCredential}>Add</Button>
       <h3>Credentials</h3>
       {
         Object.entries(credentials.credentials).map(([name, {username, password}]) =>
@@ -43,6 +53,16 @@ function StartPage() {
           </Stack>
         )
       }
+      <Button variant='contained' onClick={() => setDialogOpen(true)}>Add Credentials</Button>
+      <Dialog open={dialogOpen} onClose={closeDialog}>
+        <Stack spacing={2} alignItems='center' margin={3} onKeyDown={e => e.key == 'Enter' && onClickAddCredentials()}>
+          <h3>Add credential</h3>
+          <TextField spellCheck={false} label='Name' value={name} onChange={e => setName(e.target.value)}/>
+          <TextField spellCheck={false} label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
+          <TextField spellCheck={false} label='Password' type='password' value={password} onChange={e => setPassword(e.target.value)}/>
+          <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
+        </Stack>
+      </Dialog>
       {error && <Alert severity='error' onClose={() => setError('')}>{error}</Alert>}
     </Stack>
   );
