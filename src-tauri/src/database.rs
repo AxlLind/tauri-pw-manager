@@ -20,10 +20,6 @@ impl CredentialsDatabase {
 
   pub fn username(&self) -> &str { &self.username }
 
-  pub fn entry(&self, name: &str) -> Option<&Credential> {
-    self.credentials.get(name)
-  }
-
   pub fn add(&mut self, name: String, username: String, password: String) {
     self.credentials.insert(name, Credential { username, password });
   }
