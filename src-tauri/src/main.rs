@@ -19,7 +19,7 @@ static APP_FOLDER: Lazy<PathBuf> = once_cell::sync::Lazy::new(|| {
 });
 
 fn user_db_file(username: &str) -> PathBuf {
-  APP_FOLDER.join(username).with_extension("pwdb")
+  APP_FOLDER.join(format!("{username}.pwdb"))
 }
 
 #[derive(Debug, Default)]
@@ -73,7 +73,7 @@ fn add_credentials(name: String, username: String, password: String, session_mut
   }
   let file_contents = fs::read(&path)?;
   let (salt, bytes) = file_contents.split_at(12);
-  let mut db: CredentialsDatabase = EncryptedBlob::from_bytes(&bytes)?.decrypt(&session.key)?;
+  let mut db: CredentialsDatabase = EncryptedBlob::from_bytes(bytes)?.decrypt(&session.key)?;
   db.add(name, username, password);
   write_db_to_file(salt, &session.key, &db, &path)?;
   Ok(db)
@@ -96,7 +96,7 @@ fn login(username: String, password: String, session: State<'_, Mutex<Option<Use
   let file_contents = fs::read(db_path)?;
   let (salt, bytes) = file_contents.split_at(12);
   let key = cryptography::pbkdf2_hmac(password.as_bytes(), salt);
-  let db: CredentialsDatabase = EncryptedBlob::from_bytes(&bytes)?.decrypt(&key).map_err(|_| UserFacingError::InvalidCredentials)?;
+  let db: CredentialsDatabase = EncryptedBlob::from_bytes(bytes)?.decrypt(&key).map_err(|_| UserFacingError::InvalidCredentials)?;
   if db.username() != username {
     return Err(UserFacingError::InvalidDatabase);
   }
