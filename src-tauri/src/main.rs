@@ -19,7 +19,7 @@ static APP_FOLDER: Lazy<PathBuf> = once_cell::sync::Lazy::new(|| {
 });
 
 fn user_db_file(username: &str) -> PathBuf {
-  APP_FOLDER.join(format!("{}.pwdb", username))
+  APP_FOLDER.join(username).with_extension("pwdb")
 }
 
 #[derive(Debug, Default)]
@@ -28,16 +28,9 @@ struct UserSession {
   key: [u8; 32],
 }
 
-fn db_from_encrypted_bytes(key: &[u8], bytes: &[u8]) -> Result<CredentialsDatabase, UserFacingError> {
-  let encrypted_blob = EncryptedBlob::from_bytes(&bytes).ok_or(UserFacingError::InvalidDatabase)?;
-  let decrypted_bytes = cryptography::decrypt(&key, &encrypted_blob).map_err(|_| UserFacingError::InvalidCredentials)?;
-  serde_json::from_slice::<CredentialsDatabase>(&decrypted_bytes).map_err(|_| UserFacingError::InvalidCredentials)
-}
-
 fn write_db_to_file(salt: &[u8], key: &[u8], db: &CredentialsDatabase, path: &PathBuf) -> Result<(), UserFacingError> {
-  let serialized_db = serde_json::to_vec(&db)?;
-  let encrypted_blob = cryptography::encrypt(&key, &serialized_db)?;
-  let file_content = salt.iter().copied().chain(encrypted_blob.iter()).collect::<Vec<_>>();
+  let encrypted_blob = EncryptedBlob::encrypt(db, key)?;
+  let file_content = salt.iter().copied().chain(encrypted_blob.bytes()).collect::<Vec<_>>();
   fs::write(path, &file_content)?;
   Ok(())
 }
@@ -63,7 +56,7 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
     return Err(UserFacingError::InvalidCredentials);
   }
   let bytes = fs::read(&path)?;
-  db_from_encrypted_bytes(&session.key, &bytes[12..])
+  EncryptedBlob::from_bytes(&bytes[12..])?.decrypt(&session.key)
 }
 
 #[tauri::command]
@@ -78,9 +71,9 @@ fn add_credentials(name: String, username: String, password: String, session_mut
   if !path.exists() {
     return Err(UserFacingError::InvalidCredentials);
   }
-  let bytes = fs::read(&path)?;
-  let (salt, blob) = bytes.split_at(12);
-  let mut db = db_from_encrypted_bytes(&session.key, blob)?;
+  let file_contents = fs::read(&path)?;
+  let (salt, bytes) = file_contents.split_at(12);
+  let mut db: CredentialsDatabase = EncryptedBlob::from_bytes(&bytes)?.decrypt(&session.key)?;
   db.add(name, username, password);
   write_db_to_file(salt, &session.key, &db, &path)?;
   Ok(db)
@@ -100,10 +93,10 @@ fn login(username: String, password: String, session: State<'_, Mutex<Option<Use
   if !db_path.exists() {
     return Err(UserFacingError::InvalidCredentials);
   }
-  let bytes = fs::read(db_path)?;
-  let (salt, blob) = bytes.split_at(12);
+  let file_contents = fs::read(db_path)?;
+  let (salt, bytes) = file_contents.split_at(12);
   let key = cryptography::pbkdf2_hmac(password.as_bytes(), salt);
-  let db = db_from_encrypted_bytes(&key, blob)?;
+  let db: CredentialsDatabase = EncryptedBlob::from_bytes(&bytes)?.decrypt(&key).map_err(|_| UserFacingError::InvalidCredentials)?;
   if db.username() != username {
     return Err(UserFacingError::InvalidDatabase);
   }
