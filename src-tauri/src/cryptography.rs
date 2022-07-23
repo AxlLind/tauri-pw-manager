@@ -90,6 +90,11 @@ mod tests {
     let decrypted_data2 = blob2.decrypt(&key).expect("this should decrypt");
     assert_eq!(decrypted_data1, data);
     assert_eq!(decrypted_data2, data);
+
+    // a single bit flip should mean failure
+    let mut blob = EncryptedBlob::encrypt(&data, &key).expect("this should encrypt");
+    blob.data[4] += 1;
+    assert!(blob.decrypt(&key).is_err());
   }
 
   #[test]
