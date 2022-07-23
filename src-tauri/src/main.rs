@@ -1,3 +1,4 @@
+#![forbid(unsafe_code)]
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 mod database;
 mod cryptography;
@@ -37,10 +38,11 @@ fn write_db_to_file(salt: &[u8], key: &[u8], db: &CredentialsDatabase, path: &Pa
 
 #[tauri::command]
 fn generate_password(alphabet: String, len: usize) -> Result<String, UserFacingError> {
+  println!("Generating password: alphabet={alphabet}, len={len}");
   if alphabet.is_empty() || !alphabet.is_ascii() {
     return Err(UserFacingError::InvalidParameter);
   }
-  if len == 0 || len > 2056 {
+  if len == 0 || len > 256 {
     return Err(UserFacingError::InvalidParameter);
   }
   Ok(cryptography::generate_password(alphabet.as_bytes(), len))
@@ -61,7 +63,7 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
 
 #[tauri::command]
 fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
-  println!("Adding credential, name={name}, username={username}, password={password}");
+  println!("Adding credential, name={name}");
   if name.is_empty() || username.is_empty() || password.is_empty() {
     return Err(UserFacingError::InvalidCredentials);
   }
