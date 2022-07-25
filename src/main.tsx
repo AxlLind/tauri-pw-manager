@@ -28,6 +28,13 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: 'Cascadia Code'
+  },
+  components: {
+    MuiTextField: {
+      defaultProps: {
+        spellCheck: false
+      }
+    }
   }
 });
 

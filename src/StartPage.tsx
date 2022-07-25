@@ -56,9 +56,9 @@ function StartPage() {
       <Dialog open={dialogOpen} onClose={closeDialog}>
         <Stack spacing={2} alignItems='center' margin={3} onKeyDown={e => e.key == 'Enter' && onClickAddCredentials()}>
           <h3>Add credential</h3>
-          <TextField spellCheck={false} label='Name' value={name} onChange={e => setName(e.target.value)}/>
-          <TextField spellCheck={false} label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
-          <TextField spellCheck={false} label='Password' type='password' value={password} onChange={e => setPassword(e.target.value)}/>
+          <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
+          <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
+          <TextField label='Password' type='password' value={password} onChange={e => setPassword(e.target.value)}/>
           <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
         </Stack>
       </Dialog>
