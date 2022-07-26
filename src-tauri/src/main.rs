@@ -37,15 +37,15 @@ fn write_db_to_file(salt: &[u8], key: &[u8], db: &CredentialsDatabase, path: &Pa
 }
 
 #[tauri::command]
-fn generate_password(alphabet: String, len: usize) -> Result<String, UserFacingError> {
-  println!("Generating password: alphabet={alphabet}, len={len}");
+fn generate_password(alphabet: String, length: usize) -> Result<String, UserFacingError> {
+  println!("Generating password: alphabet={alphabet}, length={length}");
   if alphabet.is_empty() || !alphabet.is_ascii() {
     return Err(UserFacingError::InvalidParameter);
   }
-  if len == 0 || len > 256 {
+  if length == 0 || length > 256 {
     return Err(UserFacingError::InvalidParameter);
   }
-  Ok(cryptography::generate_password(alphabet.as_bytes(), len))
+  Ok(cryptography::generate_password(alphabet.as_bytes(), length))
 }
 
 #[tauri::command]
