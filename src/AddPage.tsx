@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Button, Dialog, Grid, IconButton, Paper, Slider, Stack, Switch, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Alert, Button, Dialog, Grid, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import LoopIcon from '@mui/icons-material/Loop';
 import { AppHeader, Page, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
@@ -10,12 +10,7 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
   const [types, setTypes] = useState(['lowercase', 'uppercase', 'digits', 'special']);
 
   useAsyncEffect(async () => {
-    let alphabet = '';
-    if (types.includes('lowercase')) alphabet += 'abcdefghijklmnopqrstuvwxyz';
-    if (types.includes('uppercase')) alphabet += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    if (types.includes('digits'))    alphabet += '0123456789';
-    if (types.includes('special'))   alphabet += '!@#$%^&*';
-    const res = await generate_password(alphabet, length);
+    const res = await generate_password(length, types.includes('lowercase'), types.includes('uppercase'), types.includes('digits'), types.includes('special'));
     if (typeof res !== 'string')
       throw Error(res.error);
     setPw(res);
@@ -30,18 +25,19 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
     <Dialog open={open} onClose={onClose} onKeyDown={e => e.key == 'Enter' && onClose()}>
       <Grid container spacing={2} width='25rem' margin='0 1rem 1rem 0rem' textAlign='center' alignItems='center'>
         <Grid item xs={12}>
+          <Typography>Generate Password</Typography>
+        </Grid>
+        <Grid item xs={12}>
           <Paper sx={{ padding:'1rem'}}>
             <Typography align='center' variant='h6' noWrap>{pw}</Typography>
           </Paper>
         </Grid>
-
         <Grid item xs={2}>
           <Typography>{length}</Typography>
         </Grid>
         <Grid item xs={10}>
-          <Slider value={length} min={8} max={128} valueLabelDisplay='auto' onChange={(_, value) => setLength(value as number)} />
+          <Slider value={length} min={10} max={128} valueLabelDisplay='auto' onChange={(_, value) => setLength(value as number)} />
         </Grid>
-
         <Grid item xs={9}>
           <ToggleButtonGroup value={types} onChange={(_, value) => setTypes(value)}>
             <ToggleButton disableRipple value='lowercase' sx={{ textTransform: 'none' }}>
@@ -58,7 +54,6 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
             </ToggleButton>
           </ToggleButtonGroup>
         </Grid>
-
         <Grid item xs={3}>
           <Button variant='contained' onClick={onClose}>Ok</Button>
         </Grid>

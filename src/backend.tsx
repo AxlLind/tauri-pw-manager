@@ -33,4 +33,4 @@ export const fetch_credentials = () => call<CredentialsDatabase>('fetch_credenti
 
 export const add_credentials = (name: string, username: string, password: string) => call<CredentialsDatabase>('add_credentials', { name, username, password });
 
-export const generate_password = (alphabet: string, length: number) => call<string>('generate_password', { alphabet, length });
+export const generate_password = (length: number, lowercase: boolean, uppercase: boolean, digits: boolean, special: boolean) => call<string>('generate_password', { length, lowercase, uppercase, digits, special });

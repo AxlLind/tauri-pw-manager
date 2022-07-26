@@ -8,6 +8,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use once_cell::sync::Lazy;
+use itertools::Itertools;
 use tauri::State;
 use crate::cryptography::EncryptedBlob;
 use crate::database::CredentialsDatabase;
@@ -37,12 +38,21 @@ fn write_db_to_file(salt: &[u8], key: &[u8], db: &CredentialsDatabase, path: &Pa
 }
 
 #[tauri::command]
-fn generate_password(alphabet: String, length: usize) -> Result<String, UserFacingError> {
-  println!("Generating password: alphabet={alphabet}, length={length}");
-  if alphabet.is_empty() || !alphabet.is_ascii() {
+fn generate_password(length: usize, lowercase: bool, uppercase: bool, digits: bool, special: bool) -> Result<String, UserFacingError> {
+  println!("Generating password: length={length}, lowercase={lowercase}, uppercase={uppercase}, digits={digits}, special={special}");
+  let alphabet = [
+    (lowercase, "abcdefghijklmnopqrstuvwxyz"),
+    (uppercase, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+    (digits,    "0123456789"),
+    (special,   "!@#$%^&*"),
+  ].iter()
+    .filter(|(b, _)| *b)
+    .map(|(_, s)| s)
+    .join("");
+  if alphabet.is_empty() {
     return Err(UserFacingError::InvalidParameter);
   }
-  if length == 0 || length > 256 {
+  if !(10..=128).contains(&length) {
     return Err(UserFacingError::InvalidParameter);
   }
   Ok(cryptography::generate_password(alphabet.as_bytes(), length))
