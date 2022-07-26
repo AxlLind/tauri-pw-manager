@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, Button, Stack, TextField, Dialog, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useAsyncEffect } from './utils';
+import { useAsyncEffect, AppHeader } from './utils';
 import { fetch_credentials, add_credentials, CredentialsDatabase } from './backend';
 
 function StartPage() {
@@ -41,8 +41,9 @@ function StartPage() {
   };
 
   return (
+    <>
+    <AppHeader/>
     <Stack spacing={3} alignItems='center'>
-      <h1>Tauri PW Manager</h1>
       <h3>Credentials</h3>
       {
         Object.entries(credentials.credentials).map(([name, {username, password}]) =>
@@ -67,6 +68,7 @@ function StartPage() {
       </Dialog>
       {error && <Alert severity='error' onClose={() => setError('')}>{error}</Alert>}
     </Stack>
+    </>
   );
 }
 

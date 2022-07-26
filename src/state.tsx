@@ -1,5 +1,3 @@
 import { atom } from "recoil";
 
-const pageState = atom({ key: 'page', default: 'login' });
-
-export { pageState };
+export const pageState = atom({ key: 'page', default: 'login' as 'login' | 'signup' | 'start' });
