@@ -1,8 +1,6 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { useState } from 'react';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { RecoilRoot, useRecoilValue } from 'recoil';
-import { pageState } from './state';
 import { Page } from './utils';
 import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
@@ -40,19 +38,22 @@ const theme = createTheme({
   }
 });
 
-const PageRoute = ({ page, component }: { page: Page, component: React.ComponentType }) => (
-  useRecoilValue(pageState) == page ? React.createElement(component) : null
-);
+function PageRouter() {
+  const [page, goToPage] = useState('login' as Page);
+  switch (page) {
+  case 'login': return <LoginPage goToPage={goToPage}/>;
+  case 'signup': return <SignUpPage goToPage={goToPage}/>;
+  case 'start': return <StartPage goToPage={goToPage}/>;
+  case 'add': return <AddPage goToPage={goToPage}/>;
+  default:
+    throw Error(`Invalid page: ${page}`);
+  }
+}
 
 const App = () => (
   <ThemeProvider theme={theme}>
     <CssBaseline/>
-    <RecoilRoot>
-      <PageRoute page='login' component={LoginPage} />
-      <PageRoute page='signup' component={SignUpPage} />
-      <PageRoute page='start' component={StartPage} />
-      <PageRoute page='add' component={AddPage} />
-    </RecoilRoot>
+    <PageRouter/>
   </ThemeProvider>
 );
 

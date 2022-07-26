@@ -13,8 +13,7 @@
     "@mui/material": "^5.8.7",
     "@tauri-apps/api": "^1.0.2",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "recoil": "^0.7.4"
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

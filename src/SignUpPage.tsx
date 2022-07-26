@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { useRecoilState } from 'recoil';
 import { Stack, Button, TextField, Alert } from '@mui/material';
-import { pageState } from './state';
+import { Page } from './utils';
 import { create_account } from './backend';
 
-function SignUpPage() {
-  const [, goToPage] = useRecoilState(pageState);
+function SignUpPage({ goToPage }: { goToPage: (p: Page) => void}) {
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

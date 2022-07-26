@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { Alert, Button, Stack, TextField } from '@mui/material';
-import { useRecoilState } from 'recoil';
-import { AppHeader } from './utils';
+import { AppHeader, Page } from './utils';
 import { add_credentials } from './backend';
-import { pageState } from './state';
 
-function AddPage() {
-  const [, goToPage] = useRecoilState(pageState);
+function AddPage({ goToPage }: { goToPage: (p: Page) => void}) {
   const [error, setError] = useState('');
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -16,7 +13,7 @@ function AddPage() {
     if (name === '')
       return setError('Name missing.');
     if (username === '')
-      return setError('Usename missing.');
+      return setError('Username missing.');
     if (password === '')
       return setError('Password missing.');
     const res = await add_credentials(name, username, password);
@@ -27,7 +24,7 @@ function AddPage() {
 
   return (
     <>
-    <AppHeader backPage='start'/>
+    <AppHeader goToPage={goToPage} backPage='start'/>
     <Stack spacing={3} sx={{ marginTop: '20px' }} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickAddCredentials()}>
       <h3>Add Credentials</h3>
       <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>

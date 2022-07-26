@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { Alert, Stack, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useRecoilState } from 'recoil';
-import { useAsyncEffect, AppHeader } from './utils';
+import { useAsyncEffect, AppHeader, Page } from './utils';
 import { fetch_credentials, CredentialsDatabase } from './backend';
-import { pageState } from './state';
 
-function StartPage() {
-  const [, goToPage] = useRecoilState(pageState);
+function StartPage({ goToPage }: { goToPage: (p: Page) => void}) {
   const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
   const [error, setError] = useState('');
 
@@ -20,7 +17,7 @@ function StartPage() {
 
   return (
     <>
-    <AppHeader backPage='login'/>
+    <AppHeader goToPage={goToPage} backPage='login'/>
     <Stack spacing={3} alignItems='center'>
       <h3>Credentials</h3>
       {
