@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { RecoilRoot, useRecoilState } from 'recoil';
+import { RecoilRoot, useRecoilValue } from 'recoil';
 import { pageState } from './state';
+import { Page } from './utils';
 import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
 import { StartPage } from './StartPage';
+import { AddPage } from './AddPage';
 
 const theme = createTheme({
   palette: {
@@ -38,18 +40,18 @@ const theme = createTheme({
   }
 });
 
-function Page({ id, component }: { id: string, component: React.ComponentType }) {
-  const [page,] = useRecoilState(pageState);
-  return page == id ? React.createElement(component) : null;
-}
+const PageRoute = ({ page, component }: { page: Page, component: React.ComponentType }) => (
+  useRecoilValue(pageState) == page ? React.createElement(component) : null
+);
 
 const App = () => (
   <ThemeProvider theme={theme}>
     <CssBaseline/>
     <RecoilRoot>
-      <Page id='login' component={LoginPage} />
-      <Page id='signup' component={SignUpPage} />
-      <Page id='start' component={StartPage} />
+      <PageRoute page='login' component={LoginPage} />
+      <PageRoute page='signup' component={SignUpPage} />
+      <PageRoute page='start' component={StartPage} />
+      <PageRoute page='add' component={AddPage} />
     </RecoilRoot>
   </ThemeProvider>
 );
