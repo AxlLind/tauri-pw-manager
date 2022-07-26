@@ -1,5 +1,6 @@
-import { Alert, Button, Stack, TextField, Dialog } from '@mui/material';
 import { useState } from 'react';
+import { Alert, Button, Stack, TextField, Dialog, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { useAsyncEffect } from './utils';
 import { fetch_credentials, add_credentials, CredentialsDatabase } from './backend';
 
@@ -52,7 +53,9 @@ function StartPage() {
           </Stack>
         )
       }
-      <Button variant='contained' onClick={() => setDialogOpen(true)}>Add Credentials</Button>
+      <Fab color='primary' sx={{ position: 'absolute', bottom: 20, right: 20 }} onClick={() => setDialogOpen(true)}>
+        <AddIcon/>
+      </Fab>
       <Dialog open={dialogOpen} onClose={closeDialog}>
         <Stack spacing={2} alignItems='center' margin={3} onKeyDown={e => e.key == 'Enter' && onClickAddCredentials()}>
           <h3>Add credential</h3>
