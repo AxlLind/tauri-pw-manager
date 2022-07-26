@@ -27,7 +27,7 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} onKeyDown={e => e.key == 'Enter' && onClose()}>
       <Grid container spacing={2} width='25rem' margin='0 1rem 1rem 0rem' textAlign='center' alignItems='center'>
         <Grid item xs={12}>
           <Paper sx={{ padding:'1rem'}}>
@@ -59,7 +59,7 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
           </ToggleButtonGroup>
         </Grid>
 
-        <Grid item xs>
+        <Grid item xs={3}>
           <Button variant='contained' onClick={onClose}>Ok</Button>
         </Grid>
       </Grid>
@@ -72,7 +72,7 @@ function AddPage({ goToPage }: { goToPage: (p: Page) => void}) {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const onClickAddCredentials = async () => {
     if (name === '')
@@ -90,18 +90,18 @@ function AddPage({ goToPage }: { goToPage: (p: Page) => void}) {
   return (
     <>
     <AppHeader goToPage={goToPage} backPage='start'/>
-    <Stack spacing={3} sx={{ marginTop: '20px' }} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickAddCredentials()}>
+    <Stack spacing={3} sx={{ marginTop: '20px' }} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
       <h3>Add Credentials</h3>
       <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
       <div>
         <TextField label='Password' type='password' value={password} onChange={e => setPassword(e.target.value)}/>
-        <IconButton sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenPasswordDialog(true)}>
+        <IconButton sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenDialog(true)}>
           <LoopIcon/>
         </IconButton>
       </div>
       <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
-      <GenPasswordDialog open={openPasswordDialog} setOpen={setOpenPasswordDialog} setPassword={setPassword} />
+      <GenPasswordDialog open={openDialog} setOpen={setOpenDialog} setPassword={setPassword} />
       {error && <Alert severity='error' onClose={() => setError('')}>{error}</Alert>}
     </Stack>
     </>
