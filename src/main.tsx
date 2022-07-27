@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { Page } from './utils';
 import { LoginPage } from './LoginPage';
@@ -38,16 +38,11 @@ const theme = createTheme({
   }
 });
 
+const pages = { login: LoginPage, signup: SignUpPage, start: StartPage, add: AddPage };
+
 function PageRouter() {
   const [page, goToPage] = useState('login' as Page);
-  switch (page) {
-  case 'login': return <LoginPage goToPage={goToPage}/>;
-  case 'signup': return <SignUpPage goToPage={goToPage}/>;
-  case 'start': return <StartPage goToPage={goToPage}/>;
-  case 'add': return <AddPage goToPage={goToPage}/>;
-  default:
-    throw Error(`Invalid page: ${page}`);
-  }
+  return React.createElement(pages[page], { goToPage });
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
