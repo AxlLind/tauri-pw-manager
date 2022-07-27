@@ -33,7 +33,12 @@ struct UserSession {
   key: [u8; 32],
 }
 
-fn write_db_to_file(salt: &[u8], key: &[u8], db: &CredentialsDatabase, path: &PathBuf) -> Result<(), UserFacingError> {
+fn write_db_to_file(
+  salt: &[u8],
+  key: &[u8],
+  db: &CredentialsDatabase,
+  path: &PathBuf,
+) -> Result<(), UserFacingError> {
   let encrypted_blob = EncryptedBlob::encrypt(db, key)?;
   let file_content = salt.iter().copied().chain(encrypted_blob.bytes()).collect::<Vec<_>>();
   fs::write(path, &file_content)?;
@@ -47,7 +52,13 @@ fn copy_to_clipboard(text: String) -> Result<(), UserFacingError> {
 }
 
 #[tauri::command]
-fn generate_password(length: usize, lowercase: bool, uppercase: bool, digits: bool, special: bool) -> Result<String, UserFacingError> {
+fn generate_password(
+  length: usize,
+  lowercase: bool,
+  uppercase: bool,
+  digits: bool,
+  special: bool,
+) -> Result<String, UserFacingError> {
   log::debug!("Generating password: length={length}, lowercase={lowercase}, uppercase={uppercase}, digits={digits}, special={special}");
   let alphabet = [
     (lowercase, "abcdefghijklmnopqrstuvwxyz"),
@@ -100,7 +111,12 @@ fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSe
 }
 
 #[tauri::command]
-fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
+fn add_credentials(
+  name: String,
+  username: String,
+  password: String,
+  session_mutex: State<'_, Mutex<Option<UserSession>>>,
+) -> Result<CredentialsDatabase, UserFacingError> {
   log::info!("Adding credential, name={name}");
   if name.is_empty() || username.is_empty() || password.is_empty() {
     return Err(UserFacingError::InvalidCredentials);
@@ -120,7 +136,11 @@ fn add_credentials(name: String, username: String, password: String, session_mut
 }
 
 #[tauri::command]
-fn login(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
+fn login(
+  username: String,
+  password: String,
+  session: State<'_, Mutex<Option<UserSession>>>,
+) -> Result<(), UserFacingError> {
   log::info!("Logging in, username={username}");
   if username.is_empty() || password.is_empty() {
     return Err(UserFacingError::InvalidCredentials);
@@ -153,7 +173,11 @@ fn logout(session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFaci
 }
 
 #[tauri::command]
-fn create_account(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
+fn create_account(
+  username: String,
+  password: String,
+  session: State<'_, Mutex<Option<UserSession>>>,
+) -> Result<(), UserFacingError> {
   log::info!("Creating account, username={username}");
   if username.is_empty() || password.is_empty() {
     return Err(UserFacingError::InvalidCredentials);
@@ -180,7 +204,7 @@ fn main() {
     .with_colors(true)
     .with_utc_timestamps()
     .init()
-    .expect("coud not initialize logger");
+    .expect("could not initialize logger");
 
   if !APP_FOLDER.exists() {
     fs::create_dir(&*APP_FOLDER).expect("could not create app folder");
