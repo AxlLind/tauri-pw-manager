@@ -9,6 +9,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use once_cell::sync::Lazy;
 use itertools::Itertools;
+use arboard::Clipboard;
 use tauri::State;
 use crate::cryptography::EncryptedBlob;
 use crate::database::CredentialsDatabase;
@@ -34,6 +35,12 @@ fn write_db_to_file(salt: &[u8], key: &[u8], db: &CredentialsDatabase, path: &Pa
   let encrypted_blob = EncryptedBlob::encrypt(db, key)?;
   let file_content = salt.iter().copied().chain(encrypted_blob.bytes()).collect::<Vec<_>>();
   fs::write(path, &file_content)?;
+  Ok(())
+}
+
+#[tauri::command]
+fn copy_to_clipboard(text: String) -> Result<(), UserFacingError> {
+  Clipboard::new()?.set_text(text)?;
   Ok(())
 }
 
@@ -154,7 +161,15 @@ fn main() {
   tauri::Builder::default()
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .manage(Mutex::<Option<UserSession>>::default())
-    .invoke_handler(tauri::generate_handler![login, logout, create_account, fetch_credentials, add_credentials, generate_password])
+    .invoke_handler(tauri::generate_handler![
+      login,
+      logout,
+      create_account,
+      fetch_credentials,
+      add_credentials,
+      generate_password,
+      copy_to_clipboard,
+    ])
     .run(context)
     .expect("error while running tauri application");
 }

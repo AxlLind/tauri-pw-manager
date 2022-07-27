@@ -5,7 +5,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PersonIcon from '@mui/icons-material/Person';
 import KeyIcon from '@mui/icons-material/Key';
 import { useAsyncEffect, AppHeader, Page } from './utils';
-import { fetch_credentials, CredentialsDatabase } from './backend';
+import { fetch_credentials, CredentialsDatabase, copy_to_clipboard } from './backend';
 
 function StartPage({ goToPage }: { goToPage: (p: Page) => void}) {
   const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
@@ -19,6 +19,13 @@ function StartPage({ goToPage }: { goToPage: (p: Page) => void}) {
     setCredentials(res)
   }, []);
 
+  const copyValue = (name: string, thing: 'username' | 'password') => async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const res = await copy_to_clipboard(credentials.credentials[name][thing]);
+    if (res?.error)
+      setError(res.error);
+  };
+
   return (
     <>
     <AppHeader goToPage={goToPage} backPage='login'/>
@@ -30,10 +37,10 @@ function StartPage({ goToPage }: { goToPage: (p: Page) => void}) {
             <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
               <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
               <Tooltip title='copy username'>
-                <IconButton><PersonIcon/></IconButton>
+                <IconButton onClick={copyValue(name, 'username')}><PersonIcon/></IconButton>
               </Tooltip>
               <Tooltip title='copy password'>
-                <IconButton><KeyIcon/></IconButton>
+                <IconButton onClick={copyValue(name, 'password')}><KeyIcon/></IconButton>
               </Tooltip>
             </AccordionSummary>
             <AccordionDetails>
