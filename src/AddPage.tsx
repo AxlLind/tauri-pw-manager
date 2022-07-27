@@ -12,7 +12,7 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
   useAsyncEffect(async () => {
     if (!open)
       return;
-    const res = await generate_password(length, types.includes('lowercase'), types.includes('uppercase'), types.includes('digits'), types.includes('special'));
+    const res = await generate_password(length, types);
     if (typeof res !== 'string')
       throw Error(res.error);
     setPw(res);

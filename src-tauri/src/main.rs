@@ -8,7 +8,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use once_cell::sync::Lazy;
-use itertools::Itertools;
 use arboard::Clipboard;
 use tauri::State;
 use log::LevelFilter;
@@ -52,29 +51,24 @@ fn copy_to_clipboard(text: String) -> Result<(), UserFacingError> {
 }
 
 #[tauri::command]
-fn generate_password(
-  length: usize,
-  lowercase: bool,
-  uppercase: bool,
-  digits: bool,
-  special: bool,
-) -> Result<String, UserFacingError> {
-  log::debug!("Generating password: length={length}, lowercase={lowercase}, uppercase={uppercase}, digits={digits}, special={special}");
-  let alphabet = [
-    (lowercase, "abcdefghijklmnopqrstuvwxyz"),
-    (uppercase, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-    (digits, "0123456789"),
-    (special, "!@#$%^&*"),
-  ].iter()
-    .filter(|(b, _)| *b)
-    .map(|(_, s)| s)
-    .join("");
-  if alphabet.is_empty() {
+fn generate_password(length: usize, types: Vec<String>) -> Result<String, UserFacingError> {
+  log::debug!("Generating password: types={:?}", types);
+  if types.is_empty() {
     return Err(UserFacingError::InvalidParameter);
   }
   if !(10..=128).contains(&length) {
     return Err(UserFacingError::InvalidParameter);
   }
+  let alphabet = types.iter()
+    .map(|t| match t.as_str() {
+      "lowercase" => Ok("abcdefghijklmnopqrstuvwxyz"),
+      "uppercase" => Ok("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+      "digits"    => Ok("0123456789"),
+      "special"   => Ok("!@#$%^&*"),
+      _ => Err(UserFacingError::InvalidParameter),
+    })
+    .collect::<Result<Vec<_>,_>>()?
+    .join("");
   Ok(cryptography::generate_password(alphabet.as_bytes(), length))
 }
 

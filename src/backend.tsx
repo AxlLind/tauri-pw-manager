@@ -35,6 +35,6 @@ export const add_credentials = (name: string, username: string, password: string
 
 export const remove_credentials = (name: string) => call<CredentialsDatabase>('remove_credentials', { name });
 
-export const generate_password = (length: number, lowercase: boolean, uppercase: boolean, digits: boolean, special: boolean) => call<string>('generate_password', { length, lowercase, uppercase, digits, special });
+export const generate_password = (length: number, types: string[]) => call<string>('generate_password', { length, types });
 
 export const copy_to_clipboard = (text: string) => call('copy_to_clipboard', { text });
