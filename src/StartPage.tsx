@@ -54,7 +54,7 @@ function StartPage({ goToPage }: { goToPage: (p: Page) => void}) {
           </Accordion>
         )
       }
-      <Fab color='primary' sx={{ position: 'absolute', bottom: 20, right: 20 }} onClick={() => goToPage('add')}>
+      <Fab color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}>
         <AddIcon/>
       </Fab>
       {error && <Alert severity='error' onClose={() => setError('')}>{error}</Alert>}
