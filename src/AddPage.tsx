@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Button, Dialog, Grid, IconButton, Paper, Slider, Snackbar, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Button, Dialog, Grid, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import LoopIcon from '@mui/icons-material/Loop';
 import { AppHeader, PageProps, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
@@ -64,8 +64,7 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
   );
 }
 
-function AddPage({ goToPage }: PageProps) {
-  const [error, setError] = useState('');
+function AddPage({ goToPage, setAlert }: PageProps) {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -73,19 +72,18 @@ function AddPage({ goToPage }: PageProps) {
 
   const onClickAddCredentials = async () => {
     if (name === '')
-      return setError('Name missing.');
+      return setAlert('Name missing.');
     if (username === '')
-      return setError('Username missing.');
+      return setAlert('Username missing.');
     if (password === '')
-      return setError('Password missing.');
+      return setAlert('Password missing.');
     const res = await add_credentials(name, username, password);
     if ('error' in res)
-      return setError(res.error);
+      return setAlert(res.error);
     goToPage('start');
   };
 
-  return (
-    <>
+  return <>
     <AppHeader goToPage={goToPage} backPage='start'/>
     <Stack spacing={3} sx={{ marginTop: '20px' }} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
       <h3>Add Credentials</h3>
@@ -99,12 +97,8 @@ function AddPage({ goToPage }: PageProps) {
       </div>
       <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
       <GenPasswordDialog open={openDialog} setOpen={setOpenDialog} setPassword={setPassword} />
-      <Snackbar open={!!error} autoHideDuration={3000} onClose={() => setError('')}>
-        <Alert severity='error' onClose={() => setError('')}>{error}</Alert>
-      </Snackbar>
     </Stack>
-    </>
-  );
+  </>;
 }
 
 export { AddPage };

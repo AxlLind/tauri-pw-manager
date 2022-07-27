@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Stack, Fab, Accordion, AccordionSummary, Typography, AccordionDetails, IconButton, Paper, Tooltip, Snackbar } from '@mui/material';
+import { Stack, Fab, Accordion, AccordionSummary, Typography, AccordionDetails, IconButton, Paper, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PersonIcon from '@mui/icons-material/Person';
@@ -8,32 +8,30 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useAsyncEffect, AppHeader, PageProps } from './utils';
 import { CredentialsDatabase, fetch_credentials, remove_credentials, copy_to_clipboard } from './backend';
 
-function StartPage({ goToPage }: PageProps) {
+function StartPage({ goToPage, setAlert }: PageProps) {
   const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
-  const [error, setError] = useState<string | undefined>();
   const [expanded, setExpanded] = useState('');
 
   useAsyncEffect(async () => {
     const res = await fetch_credentials();
     if ('error' in res)
-      return setError(res.error);
+      return setAlert(res.error);
     setCredentials(res)
   }, []);
 
   const copyValue = async (e: React.MouseEvent, name: string, thing: 'username' | 'password') => {
     e.stopPropagation();
-    setError((await copy_to_clipboard(credentials.credentials[name][thing]))?.error);
+    setAlert((await copy_to_clipboard(credentials.credentials[name][thing]))?.error || '');
   };
 
   const onRemoveCredentials = async (name: string) => {
     const res = await remove_credentials(name);
     if ('error' in res)
-      return setError(res.error);
+      return setAlert(res.error);
     setCredentials(res);
   }
 
-  return (
-    <>
+  return <>
     <AppHeader goToPage={goToPage} backPage='login'/>
     <Stack spacing={1} alignItems='center'>
       <Typography variant='h5' marginY='2rem'>Credentials</Typography>
@@ -66,12 +64,8 @@ function StartPage({ goToPage }: PageProps) {
       <Fab color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}>
         <AddIcon/>
       </Fab>
-      <Snackbar open={!!error} autoHideDuration={3000} onClose={() => setError('')}>
-        <Alert severity='error' onClose={() => setError('')}>{error}</Alert>
-      </Snackbar>
     </Stack>
-    </>
-  );
+  </>;
 }
 
 export { StartPage };

@@ -1,24 +1,23 @@
 import { useState } from 'react';
-import { Stack, Button, TextField, Alert, Typography, Snackbar } from '@mui/material';
+import { Stack, Button, TextField, Typography } from '@mui/material';
 import { PageProps } from './utils';
 import { create_account } from './backend';
 
-function SignUpPage({ goToPage }: PageProps) {
-  const [error, setError] = useState('');
+function SignUpPage({ goToPage, setAlert }: PageProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCopy, setPasswordCopy] = useState('');
 
   const onClickLogin = async () => {
     if (username === '')
-      return setError('Username missing.');
+      return setAlert('Username missing.');
     if (password === '')
-      return setError('Master password missing.');
+      return setAlert('Master password missing.');
     if (password !== passwordCopy)
-      return setError('Passwords do not match');
+      return setAlert('Passwords do not match');
     const err = await create_account(username, password);
     if (err)
-      return setError(err.error);
+      return setAlert(err.error);
     goToPage('start');
   };
 
@@ -33,9 +32,6 @@ function SignUpPage({ goToPage }: PageProps) {
         <Button variant='contained' onClick={onClickLogin}>Create</Button>
         <Button onClick={() => goToPage('login')}>Go Back</Button>
       </Stack>
-      <Snackbar open={!!error} autoHideDuration={3000} onClose={() => setError('')}>
-        <Alert severity='error' onClose={() => setError('')}>{error}</Alert>
-      </Snackbar>
     </Stack>
   );
 }

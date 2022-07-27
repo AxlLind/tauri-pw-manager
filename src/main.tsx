@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import React, { useState } from 'react';
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import { Page } from './utils';
+import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert } from '@mui/material';
+import { Page, Message } from './utils';
 import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
 import { StartPage } from './StartPage';
@@ -42,7 +42,14 @@ const pages = { login: LoginPage, signup: SignUpPage, start: StartPage, add: Add
 
 function PageRouter() {
   const [page, goToPage] = useState('login' as Page);
-  return React.createElement(pages[page], { goToPage });
+  const [message, setMessage] = useState({} as Message);
+  const setAlert = (m: string | Message) => setMessage(typeof m === 'string' ? { message: m } : m);
+  return <>
+    {React.createElement(pages[page], { goToPage, setAlert })}
+    <Snackbar open={!!message.message} autoHideDuration={3000} onClose={() => setMessage({})}>
+      <Alert severity={message.severity || 'error'} onClose={() => setMessage({})}>{message.message}</Alert>
+    </Snackbar>
+  </>;
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Stack, Button, TextField, Alert, Typography, Snackbar } from '@mui/material';
+import { Stack, Button, TextField, Typography } from '@mui/material';
 import { useAsyncEffect, PageProps } from './utils';
 import { login, logout } from './backend';
 
-function LoginPage({ goToPage }: PageProps) {
-  const [error, setError] = useState('');
+function LoginPage({ goToPage, setAlert }: PageProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -12,12 +11,12 @@ function LoginPage({ goToPage }: PageProps) {
 
   const onClickLogin = async () => {
     if (username === '')
-      return setError('Username missing.');
+      return setAlert('Username missing.');
     if (password === '')
-      return setError('Master password missing.');
+      return setAlert('Master password missing.');
     const err = await login(username, password);
     if (err)
-      return setError(err.error);
+      return setAlert(err.error);
     goToPage('start');
   };
 
@@ -31,9 +30,6 @@ function LoginPage({ goToPage }: PageProps) {
         <Button variant='contained' onClick={onClickLogin}>Login</Button>
         <Button onClick={() => goToPage('signup')}>Sign Up</Button>
       </Stack>
-      <Snackbar open={!!error} autoHideDuration={3000} onClose={() => setError('')}>
-        <Alert severity='error' onClose={() => setError('')}>{error}</Alert>
-      </Snackbar>
     </Stack>
   );
 }
