@@ -50,11 +50,9 @@ function PageRouter() {
   }
 }
 
-const App = () => (
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <ThemeProvider theme={theme}>
     <CssBaseline/>
     <PageRouter/>
   </ThemeProvider>
 );
-
-ReactDOM.createRoot(document.getElementById('root')!).render(<App/>);
