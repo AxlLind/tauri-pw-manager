@@ -23,4 +23,8 @@ impl CredentialsDatabase {
   pub fn add(&mut self, name: String, username: String, password: String) {
     self.credentials.insert(name, Credential { username, password });
   }
+
+  pub fn remove(&mut self, name: &str) -> bool {
+    self.credentials.remove(name).is_some()
+  }
 }

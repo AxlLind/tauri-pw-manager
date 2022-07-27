@@ -79,6 +79,25 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
 }
 
 #[tauri::command]
+fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
+  println!("Removing credentials, name={name}");
+  let session_guard = session_mutex.lock()?;
+  let session = session_guard.as_ref().ok_or(UserFacingError::InvalidCredentials)?;
+  let path = user_db_file(&session.username);
+  if !path.exists() {
+    return Err(UserFacingError::InvalidCredentials);
+  }
+  let file_contents = fs::read(&path)?;
+  let (salt, bytes) = file_contents.split_at(12);
+  let mut db: CredentialsDatabase = EncryptedBlob::from_bytes(bytes)?.decrypt(&session.key)?;
+  if !db.remove(&name) {
+    return Err(UserFacingError::InvalidParameter);
+  }
+  write_db_to_file(salt, &session.key, &db, &path)?;
+  Ok(())
+}
+
+#[tauri::command]
 fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
   println!("Adding credential, name={name}");
   if name.is_empty() || username.is_empty() || password.is_empty() {
@@ -162,11 +181,12 @@ fn main() {
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .manage(Mutex::<Option<UserSession>>::default())
     .invoke_handler(tauri::generate_handler![
+      create_account,
       login,
       logout,
-      create_account,
       fetch_credentials,
       add_credentials,
+      remove_credentials,
       generate_password,
       copy_to_clipboard,
     ])
