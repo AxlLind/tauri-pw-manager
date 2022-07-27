@@ -21,7 +21,10 @@ function StartPage({ goToPage, setAlert }: PageProps) {
 
   const copyValue = async (e: React.MouseEvent, name: string, thing: 'username' | 'password') => {
     e.stopPropagation();
-    setAlert((await copy_to_clipboard(credentials.credentials[name][thing]))?.error || '');
+    const res = await copy_to_clipboard(credentials.credentials[name][thing]);
+    if (res?.error)
+      return setAlert(res.error);
+    setAlert({ message: `${thing} copied to clipboard`, severity: 'success' });
   };
 
   const onRemoveCredentials = async (name: string) => {
