@@ -4,27 +4,33 @@ import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PersonIcon from '@mui/icons-material/Person';
 import KeyIcon from '@mui/icons-material/Key';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useAsyncEffect, AppHeader, Page } from './utils';
-import { fetch_credentials, CredentialsDatabase, copy_to_clipboard } from './backend';
+import { CredentialsDatabase, fetch_credentials, remove_credentials, copy_to_clipboard } from './backend';
 
 function StartPage({ goToPage }: { goToPage: (p: Page) => void}) {
   const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | undefined>();
   const [expanded, setExpanded] = useState('');
 
-  useAsyncEffect(async () => {
+  const fetchCredetials = async () => {
     const res = await fetch_credentials();
     if ('error' in res)
       return setError(res.error);
     setCredentials(res)
-  }, []);
-
-  const copyValue = (name: string, thing: 'username' | 'password') => async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const res = await copy_to_clipboard(credentials.credentials[name][thing]);
-    if (res?.error)
-      setError(res.error);
   };
+
+  useAsyncEffect(fetchCredetials, []);
+
+  const copyValue = async (e: React.MouseEvent, name: string, thing: 'username' | 'password') => {
+    e.stopPropagation();
+    setError((await copy_to_clipboard(credentials.credentials[name][thing]))?.error);
+  };
+
+  const onRemoveCredentials = async (name: string) => {
+    setError((await remove_credentials(name))?.error);
+    await fetchCredetials();
+  }
 
   return (
     <>
@@ -37,10 +43,10 @@ function StartPage({ goToPage }: { goToPage: (p: Page) => void}) {
             <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
               <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
               <Tooltip title='copy username'>
-                <IconButton onClick={copyValue(name, 'username')}><PersonIcon/></IconButton>
+                <IconButton onClick={e => copyValue(e, name, 'username')}><PersonIcon/></IconButton>
               </Tooltip>
               <Tooltip title='copy password'>
-                <IconButton onClick={copyValue(name, 'password')}><KeyIcon/></IconButton>
+                <IconButton onClick={e => copyValue(e, name, 'password')}><KeyIcon/></IconButton>
               </Tooltip>
             </AccordionSummary>
             <AccordionDetails>
@@ -49,6 +55,9 @@ function StartPage({ goToPage }: { goToPage: (p: Page) => void}) {
                 <Typography>{username}</Typography>
                 <Typography variant='overline'>Password</Typography>
                 <Typography>{password}</Typography>
+                <Tooltip title='delete credentials'>
+                  <IconButton onClick={() => onRemoveCredentials(name)}><DeleteIcon/></IconButton>
+                </Tooltip>
               </Paper>
             </AccordionDetails>
           </Accordion>
