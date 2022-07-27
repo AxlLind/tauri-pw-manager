@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Stack, Button, TextField, Alert } from '@mui/material';
-import { useAsyncEffect, Page } from './utils';
+import { useAsyncEffect, PageProps } from './utils';
 import { login, logout } from './backend';
 
-function LoginPage({ goToPage }: { goToPage: (p: Page) => void}) {
+function LoginPage({ goToPage }: PageProps) {
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

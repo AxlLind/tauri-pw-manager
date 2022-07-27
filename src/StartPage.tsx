@@ -5,10 +5,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PersonIcon from '@mui/icons-material/Person';
 import KeyIcon from '@mui/icons-material/Key';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useAsyncEffect, AppHeader, Page } from './utils';
+import { useAsyncEffect, AppHeader, PageProps } from './utils';
 import { CredentialsDatabase, fetch_credentials, remove_credentials, copy_to_clipboard } from './backend';
 
-function StartPage({ goToPage }: { goToPage: (p: Page) => void}) {
+function StartPage({ goToPage }: PageProps) {
   const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
   const [error, setError] = useState<string | undefined>();
   const [expanded, setExpanded] = useState('');

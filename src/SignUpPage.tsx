@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Stack, Button, TextField, Alert } from '@mui/material';
-import { Page } from './utils';
+import { PageProps } from './utils';
 import { create_account } from './backend';
 
-function SignUpPage({ goToPage }: { goToPage: (p: Page) => void}) {
+function SignUpPage({ goToPage }: PageProps) {
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, Button, Dialog, Grid, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import LoopIcon from '@mui/icons-material/Loop';
-import { AppHeader, Page, useAsyncEffect } from './utils';
+import { AppHeader, PageProps, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
 
 function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setOpen: (b: boolean) => void, setPassword: (pw: string) => void}) {
@@ -64,7 +64,7 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
   );
 }
 
-function AddPage({ goToPage }: { goToPage: (p: Page) => void}) {
+function AddPage({ goToPage }: PageProps) {
   const [error, setError] = useState('');
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
