@@ -34,7 +34,7 @@ impl UserFacingError {
 
 impl<T: Error> From<T> for UserFacingError {
   fn from(e: T) -> Self {
-    println!("Error: {}", e);
+    log::error!("{}", e);
     UserFacingError::Unexpected
   }
 }
