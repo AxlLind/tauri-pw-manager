@@ -13,14 +13,12 @@ function StartPage({ goToPage }: PageProps) {
   const [error, setError] = useState<string | undefined>();
   const [expanded, setExpanded] = useState('');
 
-  const fetchCredetials = async () => {
+  useAsyncEffect(async () => {
     const res = await fetch_credentials();
     if ('error' in res)
       return setError(res.error);
     setCredentials(res)
-  };
-
-  useAsyncEffect(fetchCredetials, []);
+  }, []);
 
   const copyValue = async (e: React.MouseEvent, name: string, thing: 'username' | 'password') => {
     e.stopPropagation();
@@ -28,8 +26,10 @@ function StartPage({ goToPage }: PageProps) {
   };
 
   const onRemoveCredentials = async (name: string) => {
-    setError((await remove_credentials(name))?.error);
-    await fetchCredetials();
+    const res = await remove_credentials(name);
+    if ('error' in res)
+      return setError(res.error);
+    setCredentials(res);
   }
 
   return (

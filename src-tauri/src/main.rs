@@ -92,7 +92,7 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
 }
 
 #[tauri::command]
-fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
+fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
   log::info!("Removing credentials, name={name}");
   let session_guard = session_mutex.lock()?;
   let session = session_guard.as_ref().ok_or(UserFacingError::InvalidCredentials)?;
@@ -107,7 +107,7 @@ fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSe
     return Err(UserFacingError::InvalidParameter);
   }
   write_db_to_file(salt, &session.key, &db, &path)?;
-  Ok(())
+  Ok(db)
 }
 
 #[tauri::command]
