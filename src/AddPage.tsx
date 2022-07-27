@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Button, Dialog, Grid, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Alert, Button, Dialog, Grid, IconButton, Paper, Slider, Snackbar, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import LoopIcon from '@mui/icons-material/Loop';
 import { AppHeader, PageProps, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
@@ -99,7 +99,9 @@ function AddPage({ goToPage }: PageProps) {
       </div>
       <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
       <GenPasswordDialog open={openDialog} setOpen={setOpenDialog} setPassword={setPassword} />
-      {error && <Alert severity='error' onClose={() => setError('')}>{error}</Alert>}
+      <Snackbar open={!!error} autoHideDuration={3000} onClose={() => setError('')}>
+        <Alert severity='error' onClose={() => setError('')}>{error}</Alert>
+      </Snackbar>
     </Stack>
     </>
   );

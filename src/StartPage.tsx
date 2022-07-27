@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Stack, Fab, Accordion, AccordionSummary, Typography, AccordionDetails, IconButton, Paper, Tooltip } from '@mui/material';
+import { Alert, Stack, Fab, Accordion, AccordionSummary, Typography, AccordionDetails, IconButton, Paper, Tooltip, Snackbar } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PersonIcon from '@mui/icons-material/Person';
@@ -66,7 +66,9 @@ function StartPage({ goToPage }: PageProps) {
       <Fab color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}>
         <AddIcon/>
       </Fab>
-      {error && <Alert severity='error' onClose={() => setError('')}>{error}</Alert>}
+      <Snackbar open={!!error} autoHideDuration={3000} onClose={() => setError('')}>
+        <Alert severity='error' onClose={() => setError('')}>{error}</Alert>
+      </Snackbar>
     </Stack>
     </>
   );
