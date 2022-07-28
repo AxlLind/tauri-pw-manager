@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Dialog, Grid, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import LoopIcon from '@mui/icons-material/Loop';
-import { AppHeader, PageProps, useAsyncEffect } from './utils';
+import { AppHeader, PageProps, PasswordField, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
 
 function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setOpen: (b: boolean) => void, setPassword: (pw: string) => void}) {
@@ -86,11 +86,11 @@ function AddPage({ goToPage, showAlert }: PageProps) {
   return <>
     <AppHeader goToPage={goToPage} backPage='start'/>
     <Stack spacing={3} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
-      <Typography variant='h5' marginY='2rem'>Add Credentials</Typography>
+      <Typography variant='h5' marginTop='2rem'>Add Credentials</Typography>
       <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
       <div>
-        <TextField label='Password' type='password' value={password} onChange={e => setPassword(e.target.value)}/>
+        <PasswordField label='Password' value={password} onChange={setPassword}/>
         <IconButton children={<LoopIcon/>} sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenDialog(true)}/>
       </div>
       <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>

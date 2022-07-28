@@ -33,6 +33,11 @@ const theme = createTheme({
     MuiTextField: {
       defaultProps: {
         spellCheck: false
+      },
+      styleOverrides: {
+        root: {
+          minWidth: '300px'
+        }
       }
     }
   }
