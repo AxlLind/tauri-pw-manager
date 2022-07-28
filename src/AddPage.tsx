@@ -85,15 +85,13 @@ function AddPage({ goToPage, showAlert }: PageProps) {
 
   return <>
     <AppHeader goToPage={goToPage} backPage='start'/>
-    <Stack spacing={3} sx={{ marginTop: '20px' }} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
-      <h3>Add Credentials</h3>
+    <Stack spacing={3} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
+      <Typography variant='h5' marginY='2rem'>Add Credentials</Typography>
       <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
       <div>
         <TextField label='Password' type='password' value={password} onChange={e => setPassword(e.target.value)}/>
-        <IconButton sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenDialog(true)}>
-          <LoopIcon/>
-        </IconButton>
+        <IconButton children={<LoopIcon/>} sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenDialog(true)}/>
       </div>
       <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
       <GenPasswordDialog open={openDialog} setOpen={setOpenDialog} setPassword={setPassword} />
