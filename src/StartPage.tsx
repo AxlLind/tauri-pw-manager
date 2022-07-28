@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stack, Fab, Accordion, AccordionSummary, Typography, AccordionDetails, IconButton, Paper, Tooltip } from '@mui/material';
+import { Stack, Fab, Accordion, AccordionSummary, Typography, AccordionDetails, IconButton, Paper, Tooltip, Dialog, DialogContent, DialogActions, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PersonIcon from '@mui/icons-material/Person';
@@ -11,6 +11,7 @@ import { CredentialsDatabase, fetch_credentials, remove_credentials, copy_to_cli
 function StartPage({ goToPage, showAlert }: PageProps) {
   const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
   const [expanded, setExpanded] = useState('');
+  const [credentialsToRemove, setCredentialsToRemove] = useState('');
 
   useAsyncEffect(async () => {
     const res = await fetch_credentials();
@@ -27,11 +28,14 @@ function StartPage({ goToPage, showAlert }: PageProps) {
     showAlert({ message: `${thing} copied to clipboard`, severity: 'success' });
   };
 
-  const onRemoveCredentials = async (name: string) => {
-    const res = await remove_credentials(name);
-    if ('error' in res)
-      return showAlert(res.error);
-    setCredentials(res);
+  const onRemoveCredentials = async (remove: boolean) => {
+    if (remove) {
+      const res = await remove_credentials(credentialsToRemove);
+      if ('error' in res)
+        return showAlert(res.error);
+      setCredentials(res);
+    }
+    setCredentialsToRemove('');
   }
 
   return <>
@@ -46,21 +50,21 @@ function StartPage({ goToPage, showAlert }: PageProps) {
               <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
                 <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
                 <Tooltip title='copy username'>
-                  <IconButton onClick={e => copyValue(e, name, 'username')}><PersonIcon/></IconButton>
+                  <IconButton children={<PersonIcon/>} onClick={e => copyValue(e, name, 'username')}/>
                 </Tooltip>
                 <Tooltip title='copy password'>
-                  <IconButton onClick={e => copyValue(e, name, 'password')}><KeyIcon/></IconButton>
+                  <IconButton children={<KeyIcon/>} onClick={e => copyValue(e, name, 'password')}/>
+                </Tooltip>
+                <Tooltip title='delete credentials'>
+                  <IconButton children={<DeleteIcon/>} onClick={e => {e.stopPropagation(); setCredentialsToRemove(name);}}/>
                 </Tooltip>
               </AccordionSummary>
               <AccordionDetails>
                 <Paper variant='outlined' sx={{ padding: '0.5rem' }}>
                   <Typography variant='overline'>Username</Typography>
-                  <Typography>{username}</Typography>
+                  <Typography noWrap>{username}</Typography>
                   <Typography variant='overline'>Password</Typography>
-                  <Typography>{password}</Typography>
-                  <Tooltip title='delete credentials'>
-                    <IconButton onClick={() => onRemoveCredentials(name)}><DeleteIcon/></IconButton>
-                  </Tooltip>
+                  <Typography noWrap>{password}</Typography>
                 </Paper>
               </AccordionDetails>
             </Accordion>
@@ -69,6 +73,13 @@ function StartPage({ goToPage, showAlert }: PageProps) {
       <Fab color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}>
         <AddIcon/>
       </Fab>
+      <Dialog open={!!credentialsToRemove} onClose={() => onRemoveCredentials(false)}>
+        <DialogContent>Delete credentials?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => onRemoveCredentials(false)}>Cancel</Button>
+          <Button onClick={() => onRemoveCredentials(true)}>Yes</Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   </>;
 }
