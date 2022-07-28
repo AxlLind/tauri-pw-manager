@@ -39,7 +39,7 @@ function StartPage({ goToPage, setAlert }: PageProps) {
     <Stack spacing={1} alignItems='center'>
       <Typography variant='h5' marginY='2rem'>Credentials</Typography>
       {
-        Object.entries(credentials.credentials).map(([name, { username, password }]) =>
+        Object.entries(credentials.credentials).sort().map(([name, { username, password }]) =>
           <Accordion key={name} expanded={expanded === name} onChange={() => setExpanded(expanded === name ? '' : name)} disableGutters sx={{ width: '30rem' }} >
             <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
               <Typography alignSelf='center' flexGrow={1}>{name}</Typography>

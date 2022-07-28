@@ -43,11 +43,15 @@ const pages = { login: LoginPage, signup: SignUpPage, start: StartPage, add: Add
 function PageRouter() {
   const [page, goToPage] = useState('login' as Page);
   const [message, setMessage] = useState({} as Message);
-  const setAlert = (m: string | Message) => setMessage(typeof m === 'string' ? { message: m } : m);
+  const [showMessage, setShowMessage] = useState(false);
+  const setAlert = (m: string | Message) => {
+    setMessage(typeof m === 'string' ? { message: m } : m);
+    setShowMessage(true);
+  };
   return <>
     {React.createElement(pages[page], { goToPage, setAlert })}
-    <Snackbar open={!!message.message} autoHideDuration={3000} onClose={() => setMessage({})}>
-      <Alert severity={message.severity || 'error'} onClose={() => setMessage({})}>{message.message}</Alert>
+    <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
+      <Alert severity={message.severity || 'error'} onClose={() => setShowMessage(false)}>{message.message}</Alert>
     </Snackbar>
   </>;
 }
