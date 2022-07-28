@@ -39,30 +39,32 @@ function StartPage({ goToPage, showAlert }: PageProps) {
     <Stack spacing={1} alignItems='center'>
       <Typography variant='h5' marginY='2rem'>Credentials</Typography>
       {
-        Object.entries(credentials.credentials).sort().map(([name, { username, password }]) =>
-          <Accordion key={name} expanded={expanded === name} onChange={() => setExpanded(expanded === name ? '' : name)} disableGutters sx={{ width: '30rem' }} >
-            <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-              <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
-              <Tooltip title='copy username'>
-                <IconButton onClick={e => copyValue(e, name, 'username')}><PersonIcon/></IconButton>
-              </Tooltip>
-              <Tooltip title='copy password'>
-                <IconButton onClick={e => copyValue(e, name, 'password')}><KeyIcon/></IconButton>
-              </Tooltip>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Paper variant='outlined' sx={{ padding: '0.5rem' }}>
-                <Typography variant='overline'>Username</Typography>
-                <Typography>{username}</Typography>
-                <Typography variant='overline'>Password</Typography>
-                <Typography>{password}</Typography>
-                <Tooltip title='delete credentials'>
-                  <IconButton onClick={() => onRemoveCredentials(name)}><DeleteIcon/></IconButton>
+        Object.entries(credentials.credentials)
+          .sort(([n1,], [n2,]) => n1 < n2 ? -1 : 1)
+          .map(([name, { username, password }]) =>
+            <Accordion key={name} expanded={expanded === name} onChange={() => setExpanded(expanded === name ? '' : name)} disableGutters sx={{ width: '30rem' }} >
+              <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
+                <Tooltip title='copy username'>
+                  <IconButton onClick={e => copyValue(e, name, 'username')}><PersonIcon/></IconButton>
                 </Tooltip>
-              </Paper>
-            </AccordionDetails>
-          </Accordion>
-        )
+                <Tooltip title='copy password'>
+                  <IconButton onClick={e => copyValue(e, name, 'password')}><KeyIcon/></IconButton>
+                </Tooltip>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Paper variant='outlined' sx={{ padding: '0.5rem' }}>
+                  <Typography variant='overline'>Username</Typography>
+                  <Typography>{username}</Typography>
+                  <Typography variant='overline'>Password</Typography>
+                  <Typography>{password}</Typography>
+                  <Tooltip title='delete credentials'>
+                    <IconButton onClick={() => onRemoveCredentials(name)}><DeleteIcon/></IconButton>
+                  </Tooltip>
+                </Paper>
+              </AccordionDetails>
+            </Accordion>
+          )
       }
       <Fab color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}>
         <AddIcon/>
