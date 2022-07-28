@@ -8,14 +8,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useAsyncEffect, AppHeader, PageProps } from './utils';
 import { CredentialsDatabase, fetch_credentials, remove_credentials, copy_to_clipboard } from './backend';
 
-function StartPage({ goToPage, setAlert }: PageProps) {
+function StartPage({ goToPage, showAlert }: PageProps) {
   const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
   const [expanded, setExpanded] = useState('');
 
   useAsyncEffect(async () => {
     const res = await fetch_credentials();
     if ('error' in res)
-      return setAlert(res.error);
+      return showAlert(res.error);
     setCredentials(res)
   }, []);
 
@@ -23,14 +23,14 @@ function StartPage({ goToPage, setAlert }: PageProps) {
     e.stopPropagation();
     const res = await copy_to_clipboard(credentials.credentials[name][thing]);
     if (res?.error)
-      return setAlert(res.error);
-    setAlert({ message: `${thing} copied to clipboard`, severity: 'success' });
+      return showAlert(res.error);
+    showAlert({ message: `${thing} copied to clipboard`, severity: 'success' });
   };
 
   const onRemoveCredentials = async (name: string) => {
     const res = await remove_credentials(name);
     if ('error' in res)
-      return setAlert(res.error);
+      return showAlert(res.error);
     setCredentials(res);
   }
 

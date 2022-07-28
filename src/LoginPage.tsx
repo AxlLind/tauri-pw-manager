@@ -3,7 +3,7 @@ import { Stack, Button, TextField, Typography } from '@mui/material';
 import { useAsyncEffect, PageProps } from './utils';
 import { login, logout } from './backend';
 
-function LoginPage({ goToPage, setAlert }: PageProps) {
+function LoginPage({ goToPage, showAlert }: PageProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -11,12 +11,12 @@ function LoginPage({ goToPage, setAlert }: PageProps) {
 
   const onClickLogin = async () => {
     if (username === '')
-      return setAlert('Username missing.');
+      return showAlert('Username missing.');
     if (password === '')
-      return setAlert('Master password missing.');
+      return showAlert('Master password missing.');
     const err = await login(username, password);
     if (err)
-      return setAlert(err.error);
+      return showAlert(err.error);
     goToPage('start');
   };
 

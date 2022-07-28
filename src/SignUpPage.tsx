@@ -3,21 +3,21 @@ import { Stack, Button, TextField, Typography } from '@mui/material';
 import { PageProps } from './utils';
 import { create_account } from './backend';
 
-function SignUpPage({ goToPage, setAlert }: PageProps) {
+function SignUpPage({ goToPage, showAlert }: PageProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCopy, setPasswordCopy] = useState('');
 
   const onClickLogin = async () => {
     if (username === '')
-      return setAlert('Username missing.');
+      return showAlert('Username missing.');
     if (password === '')
-      return setAlert('Master password missing.');
+      return showAlert('Master password missing.');
     if (password !== passwordCopy)
-      return setAlert('Passwords do not match');
+      return showAlert('Passwords do not match');
     const err = await create_account(username, password);
     if (err)
-      return setAlert(err.error);
+      return showAlert(err.error);
     goToPage('start');
   };
 

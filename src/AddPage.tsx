@@ -64,7 +64,7 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
   );
 }
 
-function AddPage({ goToPage, setAlert }: PageProps) {
+function AddPage({ goToPage, showAlert }: PageProps) {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -72,14 +72,14 @@ function AddPage({ goToPage, setAlert }: PageProps) {
 
   const onClickAddCredentials = async () => {
     if (name === '')
-      return setAlert('Name missing.');
+      return showAlert('Name missing.');
     if (username === '')
-      return setAlert('Username missing.');
+      return showAlert('Username missing.');
     if (password === '')
-      return setAlert('Password missing.');
+      return showAlert('Password missing.');
     const res = await add_credentials(name, username, password);
     if ('error' in res)
-      return setAlert(res.error);
+      return showAlert(res.error);
     goToPage('start');
   };
 
