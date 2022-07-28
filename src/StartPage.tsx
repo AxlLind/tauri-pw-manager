@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { Stack, Fab, Accordion, AccordionSummary, Typography, AccordionDetails, IconButton, Paper, Tooltip, Dialog, DialogContent, DialogActions, Button } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import PersonIcon from '@mui/icons-material/Person';
-import KeyIcon from '@mui/icons-material/Key';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Add, ExpandMore, Person, Key, Delete } from '@mui/icons-material';
 import { useAsyncEffect, AppHeader, PageProps } from './utils';
 import { CredentialsDatabase, fetch_credentials, remove_credentials, copy_to_clipboard } from './backend';
 
@@ -47,16 +43,16 @@ function StartPage({ goToPage, showAlert }: PageProps) {
           .sort(([n1,], [n2,]) => n1 < n2 ? -1 : 1)
           .map(([name, { username, password }]) =>
             <Accordion key={name} expanded={expanded === name} onChange={() => setExpanded(expanded === name ? '' : name)} disableGutters sx={{ width: '30rem' }} >
-              <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+              <AccordionSummary expandIcon={<ExpandMore/>}>
                 <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
                 <Tooltip title='copy username'>
-                  <IconButton children={<PersonIcon/>} onClick={e => copyValue(e, name, 'username')}/>
+                  <IconButton children={<Person/>} onClick={e => copyValue(e, name, 'username')}/>
                 </Tooltip>
                 <Tooltip title='copy password'>
-                  <IconButton children={<KeyIcon/>} onClick={e => copyValue(e, name, 'password')}/>
+                  <IconButton children={<Key/>} onClick={e => copyValue(e, name, 'password')}/>
                 </Tooltip>
                 <Tooltip title='delete credentials'>
-                  <IconButton children={<DeleteIcon/>} onClick={e => {e.stopPropagation(); setCredentialsToRemove(name);}}/>
+                  <IconButton children={<Delete/>} onClick={e => {e.stopPropagation(); setCredentialsToRemove(name);}}/>
                 </Tooltip>
               </AccordionSummary>
               <AccordionDetails>
@@ -70,9 +66,7 @@ function StartPage({ goToPage, showAlert }: PageProps) {
             </Accordion>
           )
       }
-      <Fab color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}>
-        <AddIcon/>
-      </Fab>
+      <Fab children={<Add/>} color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}/>
       <Dialog open={!!credentialsToRemove} onClose={() => onRemoveCredentials(false)}>
         <DialogContent>Delete credentials?</DialogContent>
         <DialogActions>
