@@ -6,11 +6,10 @@ A desktop password manager using Tauri, with a backend in Rust and a frontend in
 ![login page](./images/login-page.png)
 
 ## setup
-Assumes you have the [Rust toolchain](https://rustup.rs/) and [npm](https://www.npmjs.com/) installed.
+Assumes you have the [Rust toolchain](https://rustup.rs/) and [npm](https://www.npmjs.com/) installed. Run the following to install dependencies:
 
 ```bash
-npm install
-cargo install tauri-cli
+npm run setup
 ```
 
 ## usage

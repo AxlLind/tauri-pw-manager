@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "setup": "cargo install tauri-cli && npm install",
     "dev": "vite",
     "build": "tsc && vite build"
   },
