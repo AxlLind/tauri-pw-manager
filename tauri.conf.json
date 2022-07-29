@@ -21,11 +21,11 @@
       "identifier": "tauri.pw.manager",
       "targets": "all",
       "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
+        "assets/32x32.png",
+        "assets/128x128.png",
+        "assets/128x128@2x.png",
+        "assets/icon.icns",
+        "assets/icon.ico"
       ]
     }
   }

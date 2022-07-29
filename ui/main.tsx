@@ -6,6 +6,7 @@ import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
 import { StartPage } from './StartPage';
 import { AddPage } from './AddPage';
+import CascadiaMono from '../assets/CascadiaMono.woff2';
 
 const theme = createTheme({
   palette: {
@@ -27,7 +28,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Cascadia Code'
+    fontFamily: 'CascadiaMono'
   },
   components: {
     MuiTextField: {
@@ -39,7 +40,15 @@ const theme = createTheme({
           minWidth: '300px'
         }
       }
-    }
+    },
+    MuiCssBaseline: {
+      styleOverrides: `
+        @font-face {
+          font-family: 'CascadiaMono';
+          src: url(${CascadiaMono}) format('woff2');
+        }
+      `,
+    },
   }
 });
 
