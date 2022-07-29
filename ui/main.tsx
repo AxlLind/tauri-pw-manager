@@ -6,6 +6,7 @@ import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
 import { StartPage } from './StartPage';
 import { AddPage } from './AddPage';
+// @ts-ignore
 import CascadiaMono from '../assets/CascadiaMono.woff2';
 
 const theme = createTheme({
