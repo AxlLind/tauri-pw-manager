@@ -3,7 +3,7 @@
     "beforeDevCommand": "npm run dev",
     "devPath": "http://127.0.0.1:3000",
     "beforeBuildCommand": "npm run build",
-    "distDir": "./build"
+    "distDir": "./ui/build"
   },
   "package": {
     "productName": "pw-manager",

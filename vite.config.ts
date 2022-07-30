@@ -5,7 +5,7 @@ export default defineConfig({
   root: './ui',
   plugins: [ react() ],
   build: {
-    outDir: '../build',
+    outDir: './build',
     emptyOutDir: true,
   },
   clearScreen: false,
