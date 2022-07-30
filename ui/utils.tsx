@@ -4,9 +4,7 @@ import { ArrowBack, Visibility, VisibilityOff } from '@mui/icons-material';
 
 export type Page = 'login' | 'signup' | 'start' | 'add';
 
-export type Message = { message?: string, severity?: AlertColor };
-
-export type PageProps = { goToPage: (p: Page) => void, showAlert: (e: string | Message) => void };
+export type PageProps = { goToPage: (p: Page) => void, showAlert: (message: string, severity?: AlertColor) => void };
 
 export function useAsyncEffect(effect: () => Promise<any>, deps: any[]) {
   useEffect(() => { effect().catch(console.error); }, deps)

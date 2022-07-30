@@ -21,7 +21,7 @@ function StartPage({ goToPage, showAlert }: PageProps) {
     const res = await copy_to_clipboard(credentials.credentials[name][thing]);
     if (res?.error)
       return showAlert(res.error);
-    showAlert({ message: `${thing} copied to clipboard`, severity: 'success' });
+    showAlert(`${thing} copied to clipboard`, 'success');
   };
 
   const onRemoveCredentials = async (remove: boolean) => {

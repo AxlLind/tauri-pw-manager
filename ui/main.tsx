@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import React, { useState } from 'react';
-import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert } from '@mui/material';
-import { Page, Message } from './utils';
+import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor } from '@mui/material';
+import { Page } from './utils';
 import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
 import { StartPage } from './StartPage';
@@ -57,16 +57,16 @@ const pages = { login: LoginPage, signup: SignUpPage, start: StartPage, add: Add
 
 function PageRouter() {
   const [page, goToPage] = useState('login' as Page);
-  const [message, setMessage] = useState({} as Message);
+  const [{ m, severity }, setMessage] = useState({ m: '', severity: 'error' as AlertColor });
   const [showMessage, setShowMessage] = useState(false);
-  const showAlert = (m: string | Message) => {
-    setMessage(typeof m === 'string' ? { message: m } : m);
+  const showAlert = (m: string, severity: AlertColor = 'error') => {
+    setMessage({ m, severity });
     setShowMessage(true);
   };
   return <>
     {React.createElement(pages[page], { goToPage, showAlert })}
     <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
-      <Alert severity={message.severity || 'error'} onClose={() => setShowMessage(false)}>{message.message}</Alert>
+      <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>
     </Snackbar>
   </>;
 }
