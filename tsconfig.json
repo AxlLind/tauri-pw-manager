@@ -17,6 +17,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["ui"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["ui", "vite.config.ts"]
 }
