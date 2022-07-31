@@ -14,7 +14,7 @@ use log::LevelFilter;
 use simple_logger::SimpleLogger;
 use crate::cryptography::EncryptedBlob;
 use crate::database::CredentialsDatabase;
-use crate::error::UserFacingError;
+use crate::error::Error;
 
 static APP_FOLDER: Lazy<PathBuf> = Lazy::new(|| {
   // TODO: Handle windows here
@@ -36,7 +36,7 @@ struct UserSession {
   db: CredentialsDatabase,
 }
 
-fn write_to_file(session: &UserSession) -> Result<(), UserFacingError> {
+fn write_to_file(session: &UserSession) -> Result<(), Error> {
   let encrypted_blob = EncryptedBlob::encrypt(&session.db, &session.key)?;
   let file_content = session.salt.iter()
     .copied()
@@ -49,19 +49,19 @@ fn write_to_file(session: &UserSession) -> Result<(), UserFacingError> {
 }
 
 #[tauri::command]
-fn copy_to_clipboard(text: String) -> Result<(), UserFacingError> {
+fn copy_to_clipboard(text: String) -> Result<(), Error> {
   Clipboard::new()?.set_text(text)?;
   Ok(())
 }
 
 #[tauri::command]
-fn generate_password(length: usize, types: Vec<String>) -> Result<String, UserFacingError> {
+fn generate_password(length: usize, types: Vec<String>) -> Result<String, Error> {
   log::debug!("Generating password: types={:?}", types);
   if types.is_empty() {
-    return Err(UserFacingError::InvalidParameter);
+    return Err(Error::InvalidParameter);
   }
   if !(10..=128).contains(&length) {
-    return Err(UserFacingError::InvalidParameter);
+    return Err(Error::InvalidParameter);
   }
   let alphabet = types.iter()
     .map(|t| match t.as_str() {
@@ -69,7 +69,7 @@ fn generate_password(length: usize, types: Vec<String>) -> Result<String, UserFa
       "uppercase" => Ok("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
       "digits"    => Ok("0123456789"),
       "special"   => Ok("!@#$%^&*"),
-      _ => Err(UserFacingError::InvalidParameter),
+      _ => Err(Error::InvalidParameter),
     })
     .collect::<Result<Vec<_>,_>>()?
     .join("");
@@ -77,82 +77,40 @@ fn generate_password(length: usize, types: Vec<String>) -> Result<String, UserFa
 }
 
 #[tauri::command]
-fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
+fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, Error> {
   log::debug!("Fetching credentials");
   let session_guard = session_mutex.lock()?;
-  let session = session_guard.as_ref().ok_or(UserFacingError::InvalidCredentials)?;
+  let session = session_guard.as_ref().ok_or(Error::InvalidCredentials)?;
   Ok(session.db.clone())
 }
 
 #[tauri::command]
-fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, UserFacingError> {
+fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, Error> {
   log::info!("Removing credentials, name={name}");
   let mut session_guard = session_mutex.lock()?;
-  let session = session_guard.as_mut().ok_or(UserFacingError::InvalidCredentials)?;
+  let session = session_guard.as_mut().ok_or(Error::InvalidCredentials)?;
   if !session.db.remove(&name) {
-    return Err(UserFacingError::InvalidParameter);
+    return Err(Error::InvalidParameter);
   }
   write_to_file(session)?;
   Ok(session.db.clone())
 }
 
 #[tauri::command]
-fn add_credentials(
-  name: String,
-  username: String,
-  password: String,
-  session_mutex: State<'_, Mutex<Option<UserSession>>>,
-) -> Result<CredentialsDatabase, UserFacingError> {
+fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, Error> {
   log::info!("Adding credential, name={name}");
   if name.is_empty() || username.is_empty() || password.is_empty() {
-    return Err(UserFacingError::InvalidCredentials);
+    return Err(Error::InvalidCredentials);
   }
   let mut session_guard = session_mutex.lock()?;
-  let session = session_guard.as_mut().ok_or(UserFacingError::InvalidCredentials)?;
+  let session = session_guard.as_mut().ok_or(Error::InvalidCredentials)?;
   session.db.add(name, username, password);
   write_to_file(session)?;
   Ok(session.db.clone())
 }
 
 #[tauri::command]
-fn login(
-  username: String,
-  password: String,
-  session: State<'_, Mutex<Option<UserSession>>>,
-) -> Result<(), UserFacingError> {
-  log::info!("Logging in, username={username}");
-  if username.is_empty() || password.is_empty() {
-    return Err(UserFacingError::InvalidCredentials);
-  }
-  let mut session = session.lock()?;
-  if session.is_some() {
-    return Err(UserFacingError::Unexpected);
-  }
-  let file = user_db_file(&username);
-  if !file.exists() {
-    return Err(UserFacingError::InvalidCredentials);
-  }
-  let file_contents = fs::read(&file)?;
-  if file_contents.len() < 12+16+32+1 {
-    return Err(UserFacingError::InvalidDatabase);
-  }
-  let salt: [u8; 12] = file_contents[..12].try_into().unwrap();
-  let nonce: [u8; 16] = file_contents[12..12+16].try_into().unwrap();
-  let encrypted_key: [u8; 32] = file_contents[12+16..12+16+32].try_into().unwrap();
-  let master_key = cryptography::pbkdf2_hmac(password.as_bytes(), &salt);
-  let key = cryptography::decrypt_key(&master_key, &encrypted_key, &nonce).map_err(|_| UserFacingError::InvalidCredentials)?;
-  let db: CredentialsDatabase = EncryptedBlob::from_bytes(&file_contents[12+16+32..])?
-    .decrypt(&key)
-    .map_err(|_| UserFacingError::InvalidCredentials)?;
-  if db.username() != username {
-    return Err(UserFacingError::InvalidDatabase);
-  }
-  *session = Some(UserSession { file, salt, nonce, encrypted_key, key, db });
-  Ok(())
-}
-
-#[tauri::command]
-fn logout(session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFacingError> {
+fn logout(session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
   let mut session = session.lock()?;
   log::info!("Logging out, logged_in={}", session.is_some());
   *session = None;
@@ -160,22 +118,51 @@ fn logout(session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), UserFaci
 }
 
 #[tauri::command]
-fn create_account(
-  username: String,
-  password: String,
-  session: State<'_, Mutex<Option<UserSession>>>,
-) -> Result<(), UserFacingError> {
-  log::info!("Creating account, username={username}");
+fn login(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
+  log::info!("Logging in, username={username}");
   if username.is_empty() || password.is_empty() {
-    return Err(UserFacingError::InvalidCredentials);
+    return Err(Error::InvalidCredentials);
   }
   let mut session = session.lock()?;
   if session.is_some() {
-    return Err(UserFacingError::Unexpected);
+    return Err(Error::Unexpected);
+  }
+  let file = user_db_file(&username);
+  if !file.exists() {
+    return Err(Error::InvalidCredentials);
+  }
+  let file_contents = fs::read(&file)?;
+  if file_contents.len() < 12+16+32+1 {
+    return Err(Error::InvalidDatabase);
+  }
+  let salt: [u8; 12] = file_contents[..12].try_into().unwrap();
+  let nonce: [u8; 16] = file_contents[12..12+16].try_into().unwrap();
+  let encrypted_key: [u8; 32] = file_contents[12+16..12+16+32].try_into().unwrap();
+  let master_key = cryptography::pbkdf2_hmac(password.as_bytes(), &salt);
+  let key = cryptography::decrypt_key(&master_key, &encrypted_key, &nonce).map_err(|_| Error::InvalidCredentials)?;
+  let db: CredentialsDatabase = EncryptedBlob::from_bytes(&file_contents[12+16+32..])?
+    .decrypt(&key)
+    .map_err(|_| Error::InvalidCredentials)?;
+  if db.username() != username {
+    return Err(Error::InvalidDatabase);
+  }
+  *session = Some(UserSession { file, salt, nonce, encrypted_key, key, db });
+  Ok(())
+}
+
+#[tauri::command]
+fn create_account(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
+  log::info!("Creating account, username={username}");
+  if username.is_empty() || password.is_empty() {
+    return Err(Error::InvalidCredentials);
+  }
+  let mut session = session.lock()?;
+  if session.is_some() {
+    return Err(Error::Unexpected);
   }
   let file = user_db_file(&username);
   if file.exists() {
-    return Err(UserFacingError::UsernameTaken);
+    return Err(Error::UsernameTaken);
   }
   let salt = cryptography::random_bytes::<12>();
   let master_key = cryptography::pbkdf2_hmac(password.as_bytes(), &salt);

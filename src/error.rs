@@ -1,8 +1,7 @@
-use std::error::Error;
 use serde::{Serialize, ser::SerializeMap};
 
 #[derive(Debug, Clone)]
-pub enum UserFacingError {
+pub enum Error {
   InvalidCredentials,
   InvalidDatabase,
   InvalidParameter,
@@ -10,36 +9,36 @@ pub enum UserFacingError {
   Unexpected,
 }
 
-impl UserFacingError {
+impl Error {
   fn message(&self) -> &'static str {
     match self {
-      UserFacingError::InvalidCredentials => "invalid credentials",
-      UserFacingError::InvalidDatabase => "corrupt key database",
-      UserFacingError::InvalidParameter => "invalid parameter",
-      UserFacingError::UsernameTaken => "username already registered",
-      UserFacingError::Unexpected => "unexpected error occurred"
+      Error::InvalidCredentials => "invalid credentials",
+      Error::InvalidDatabase => "corrupt key database",
+      Error::InvalidParameter => "invalid parameter",
+      Error::UsernameTaken => "username already registered",
+      Error::Unexpected => "unexpected error occurred"
     }
   }
 
   fn key(&self) -> &'static str {
     match self {
-      UserFacingError::InvalidCredentials => "invalid_credentials",
-      UserFacingError::InvalidDatabase => "invalid_database",
-      UserFacingError::InvalidParameter => "invalid_parameter",
-      UserFacingError::UsernameTaken => "username_taken",
-      UserFacingError::Unexpected => "unexpected",
+      Error::InvalidCredentials => "invalid_credentials",
+      Error::InvalidDatabase => "invalid_database",
+      Error::InvalidParameter => "invalid_parameter",
+      Error::UsernameTaken => "username_taken",
+      Error::Unexpected => "unexpected",
     }
   }
 }
 
-impl<T: Error> From<T> for UserFacingError {
+impl<T: std::error::Error> From<T> for Error {
   fn from(e: T) -> Self {
-    log::error!("{}", e);
-    UserFacingError::Unexpected
+    log::error!("Unexpected error: {}", e);
+    Error::Unexpected
   }
 }
 
-impl Serialize for UserFacingError {
+impl Serialize for Error {
   fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
     let mut json_err = serializer.serialize_map(Some(2))?;
     json_err.serialize_entry("key", self.key())?;
