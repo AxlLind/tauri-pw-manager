@@ -9,15 +9,11 @@ function SignUpPage({ goToPage, showAlert }: PageProps) {
   const [passwordCopy, setPasswordCopy] = useState('');
 
   const onClickLogin = async () => {
-    if (username === '')
-      return showAlert('Username missing.');
-    if (password === '')
-      return showAlert('Master password missing.');
-    if (password !== passwordCopy)
-      return showAlert('Passwords do not match');
+    if (username === '') return showAlert('Username missing.');
+    if (password === '') return showAlert('Master password missing.');
+    if (password !== passwordCopy) return showAlert('Passwords do not match');
     const err = await create_account(username, password);
-    if (err)
-      return showAlert(err.error);
+    if (err) return showAlert(err.error);
     goToPage('start');
   };
 

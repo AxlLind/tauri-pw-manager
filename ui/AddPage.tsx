@@ -71,15 +71,11 @@ function AddPage({ goToPage, showAlert }: PageProps) {
   const [openDialog, setOpenDialog] = useState(false);
 
   const onClickAddCredentials = async () => {
-    if (name === '')
-      return showAlert('Name missing.');
-    if (username === '')
-      return showAlert('Username missing.');
-    if (password === '')
-      return showAlert('Password missing.');
+    if (name === '') return showAlert('Name missing.');
+    if (username === '') return showAlert('Username missing.');
+    if (password === '') return showAlert('Password missing.');
     const res = await add_credentials(name, username, password);
-    if ('error' in res)
-      return showAlert(res.error);
+    if ('error' in res) return showAlert(res.error);
     goToPage('start');
   };
 

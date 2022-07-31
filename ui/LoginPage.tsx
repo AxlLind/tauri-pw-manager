@@ -10,13 +10,10 @@ function LoginPage({ goToPage, showAlert }: PageProps) {
   useAsyncEffect(logout, []);
 
   const onClickLogin = async () => {
-    if (username === '')
-      return showAlert('Username missing.');
-    if (password === '')
-      return showAlert('Master password missing.');
+    if (username === '') return showAlert('Username missing.');
+    if (password === '') return showAlert('Master password missing.');
     const err = await login(username, password);
-    if (err)
-      return showAlert(err.error);
+    if (err) return showAlert(err.error);
     goToPage('start');
   };
 

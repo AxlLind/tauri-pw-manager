@@ -11,24 +11,21 @@ function StartPage({ goToPage, showAlert }: PageProps) {
 
   useAsyncEffect(async () => {
     const res = await fetch_credentials();
-    if ('error' in res)
-      return showAlert(res.error);
+    if ('error' in res) return showAlert(res.error);
     setCredentials(res)
   }, []);
 
   const copyValue = async (e: React.MouseEvent, name: string, thing: 'username' | 'password') => {
     e.stopPropagation();
     const res = await copy_to_clipboard(credentials.credentials[name][thing]);
-    if (res?.error)
-      return showAlert(res.error);
+    if (res?.error) return showAlert(res.error);
     showAlert(`${thing} copied to clipboard`, 'success');
   };
 
   const onRemoveCredentials = async (remove: boolean) => {
     if (remove) {
       const res = await remove_credentials(credentialsToRemove);
-      if ('error' in res)
-        return showAlert(res.error);
+      if ('error' in res) return showAlert(res.error);
       setCredentials(res);
     }
     setCredentialsToRemove('');
