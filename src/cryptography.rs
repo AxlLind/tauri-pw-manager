@@ -1,7 +1,8 @@
 use std::marker::PhantomData;
+use openssl::error::ErrorStack;
 use openssl::hash::MessageDigest;
 use openssl::rand::rand_bytes;
-use openssl::symm::{encrypt_aead, Cipher, decrypt_aead};
+use openssl::symm::{Cipher, encrypt_aead, decrypt_aead, encrypt, decrypt};
 use serde::{Serialize, de::DeserializeOwned};
 use crate::error::UserFacingError;
 
@@ -57,6 +58,17 @@ pub fn pbkdf2_hmac(password: &[u8], salt: &[u8]) -> [u8; 32] {
   let mut key = [0; 32];
   openssl::pkcs5::pbkdf2_hmac(password, salt, 100_000, MessageDigest::sha256(), &mut key).expect("pbkdf2 should not fail");
   key
+}
+
+pub fn encrypt_key(master_key: &[u8], key: &[u8]) -> Result<([u8; 32], [u8; 16]), ErrorStack> {
+  let nonce = random_bytes::<16>();
+  let ciphertext = encrypt(Cipher::aes_256_ctr(), master_key, Some(&nonce), key)?;
+  Ok((ciphertext.try_into().unwrap(), nonce))
+}
+
+pub fn decrypt_key(master_key: &[u8], encrypted_key: &[u8], nonce: &[u8]) -> Result<[u8; 32], ErrorStack> {
+  let plaintext = decrypt(Cipher::aes_256_ctr(), master_key, Some(nonce), encrypted_key)?;
+  Ok(plaintext.try_into().unwrap())
 }
 
 pub fn generate_password(alphabet: &[u8], len: usize) -> String {

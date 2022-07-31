@@ -7,7 +7,7 @@ pub struct Credential {
   pub password: String,
 }
 
-#[derive(Default, Debug, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct CredentialsDatabase {
   username: String,
   credentials: HashMap<String, Credential>
