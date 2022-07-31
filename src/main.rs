@@ -17,9 +17,12 @@ use crate::database::CredentialsDatabase;
 use crate::error::Error;
 
 static APP_FOLDER: Lazy<PathBuf> = Lazy::new(|| {
-  // TODO: Handle windows here
-  let home_folder = std::env::var("HOME").expect("$HOME not set!");
-  [&home_folder, ".tauri-pw-manager"].iter().collect()
+  let base_folder = if cfg!(target_os = "windows") {
+    std::env::var("APPDATA").expect("$APPDATA not set!")
+  } else {
+    std::env::var("HOME").expect("$HOME not set!")
+  };
+  [&base_folder, ".tauri-pw-manager"].iter().collect()
 });
 
 fn user_db_file(username: &str) -> PathBuf {
