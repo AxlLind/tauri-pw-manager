@@ -36,7 +36,7 @@ struct UserSession {
   db: CredentialsDatabase,
 }
 
-fn write_to_file(session: &UserSession) -> Result<(), Error> {
+fn save_database(session: &UserSession) -> Result<(), Error> {
   let encrypted_blob = EncryptedBlob::encrypt(&session.db, &session.key)?;
   let file_content = session.salt.iter()
     .copied()
@@ -92,7 +92,7 @@ fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSe
   if !session.db.remove(&name) {
     return Err(Error::InvalidParameter);
   }
-  write_to_file(session)?;
+  save_database(session)?;
   Ok(session.db.clone())
 }
 
@@ -105,7 +105,7 @@ fn add_credentials(name: String, username: String, password: String, session_mut
   let mut session_guard = session_mutex.lock()?;
   let session = session_guard.as_mut().ok_or(Error::InvalidCredentials)?;
   session.db.add(name, username, password);
-  write_to_file(session)?;
+  save_database(session)?;
   Ok(session.db.clone())
 }
 
@@ -170,7 +170,7 @@ fn create_account(username: String, password: String, session: State<'_, Mutex<O
   let (encrypted_key, nonce) = cryptography::encrypt_key(&master_key, &key)?;
   let db = CredentialsDatabase::new(username.clone());
   *session = Some(UserSession { file, salt, nonce, encrypted_key, key, db });
-  write_to_file(&session.as_ref().unwrap())?;
+  save_database(&session.as_ref().unwrap())?;
   Ok(())
 }
 

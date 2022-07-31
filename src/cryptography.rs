@@ -4,7 +4,7 @@ use openssl::hash::MessageDigest;
 use openssl::rand::rand_bytes;
 use openssl::symm::{Cipher, encrypt_aead, decrypt_aead, encrypt, decrypt};
 use serde::{Serialize, de::DeserializeOwned};
-use crate::error::UserFacingError;
+use crate::error::Error;
 
 const AAD_MESSAGE: &[u8] = b"Tauri PW Manager v0.0.1";
 
@@ -17,7 +17,7 @@ pub struct EncryptedBlob<T> {
 }
 
 impl<T: Serialize + DeserializeOwned> EncryptedBlob<T> {
-  pub fn encrypt(t: &T, key: &[u8]) -> Result<Self, UserFacingError> {
+  pub fn encrypt(t: &T, key: &[u8]) -> Result<Self, Error> {
     let iv = random_bytes::<12>();
     let mut tag = [0; 16];
     let serialized = serde_json::to_vec(&t)?;
@@ -25,15 +25,15 @@ impl<T: Serialize + DeserializeOwned> EncryptedBlob<T> {
     Ok(Self { iv, tag, data, _t: PhantomData })
   }
 
-  pub fn decrypt(&self, key: &[u8]) -> Result<T, UserFacingError> {
+  pub fn decrypt(&self, key: &[u8]) -> Result<T, Error> {
     let bytes = decrypt_aead(Cipher::aes_256_gcm(), key, Some(&self.iv), AAD_MESSAGE, &self.data, &self.tag)?;
     let t = serde_json::from_slice(&bytes)?;
     Ok(t)
   }
 
-  pub fn from_bytes(bytes: &[u8]) -> Result<Self, UserFacingError> {
+  pub fn from_bytes(bytes: &[u8]) -> Result<Self, Error> {
     if bytes.len() < (12 + 16 + 1) {
-      return Err(UserFacingError::InvalidDatabase);
+      return Err(Error::InvalidDatabase);
     }
     Ok(Self {
       iv: bytes[0..12].try_into().unwrap(),
