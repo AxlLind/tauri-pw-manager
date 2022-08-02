@@ -1,8 +1,8 @@
 {
   "build": {
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "npm run --silent dev",
     "devPath": "http://127.0.0.1:3000",
-    "beforeBuildCommand": "npm run build",
+    "beforeBuildCommand": "npm run --silent build",
     "distDir": "./ui/build"
   },
   "package": {
