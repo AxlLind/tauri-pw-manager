@@ -3,6 +3,7 @@
 mod database;
 mod cryptography;
 mod error;
+mod logs;
 
 use std::fs;
 use std::path::PathBuf;
@@ -10,13 +11,11 @@ use std::sync::Mutex;
 use once_cell::sync::Lazy;
 use arboard::Clipboard;
 use tauri::State;
-use log::LevelFilter;
-use simple_logger::SimpleLogger;
 use crate::cryptography::EncryptedBlob;
 use crate::database::CredentialsDatabase;
 use crate::error::Error;
 
-static APP_FOLDER: Lazy<PathBuf> = Lazy::new(|| {
+pub static APP_FOLDER: Lazy<PathBuf> = Lazy::new(|| {
   let base_folder = if cfg!(target_os = "windows") {
     std::env::var("APPDATA").expect("$APPDATA not set!")
   } else {
@@ -178,16 +177,12 @@ fn create_account(username: String, password: String, session: State<'_, Mutex<O
 }
 
 fn main() {
-  SimpleLogger::new()
-    .with_level(if cfg!(debug_assertions) { LevelFilter::Debug } else { LevelFilter::Info })
-    .with_colors(true)
-    .with_utc_timestamps()
-    .init()
-    .expect("could not initialize logger");
-
   if !APP_FOLDER.exists() {
-    fs::create_dir(&*APP_FOLDER).expect("could not create app folder");
+    fs::create_dir(&*APP_FOLDER).expect("failed to create app folder");
   }
+
+  logs::initialize().expect("failed to initialize logger");
+  logs::remove_old().expect("failed to remove old logs");
 
   let context = tauri::generate_context!();
   tauri::Builder::default()
