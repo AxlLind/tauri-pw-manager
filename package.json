@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "setup": "cargo install tauri-cli && npm install",
-    "dev": "vite",
+    "dev": "vite --logLevel warn",
     "build": "tsc && vite build"
   },
   "dependencies": {
