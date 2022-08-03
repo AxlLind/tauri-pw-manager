@@ -29,19 +29,18 @@ pub fn remove_old() -> Result<(), Error> {
   let deletion_point = chrono::Local::now().naive_local() - chrono::Duration::days(3);
   for e in fs::read_dir(APP_FOLDER.join("logs"))? {
     let path = e?.path();
-    if !path.is_file() || path.extension().map(|e| e != "log").unwrap_or(false) {
+    if !path.is_file() || path.extension().map_or(false, |e| e != "log") {
       continue;
     }
-    let file_stem = path.file_stem().map(|s| s.to_str()).flatten().unwrap_or("");
-    let log_time = match chrono::NaiveDate::parse_from_str(file_stem, "%Y-%m-%d") {
+    let file_stem = path.file_stem().unwrap().to_string_lossy();
+    let log_time = match chrono::NaiveDate::parse_from_str(&file_stem, "%Y-%m-%d") {
       Ok(d) => d.and_hms(0, 0, 0),
       Err(_) => continue,
     };
-    if deletion_point < log_time {
-      continue;
+    if log_time < deletion_point {
+      log::info!("removing old log file: file={}", path.file_name().unwrap().to_string_lossy());
+      fs::remove_file(path)?;
     }
-    log::info!("removing old log file: file={}", path.file_name().unwrap().to_string_lossy());
-    fs::remove_file(path)?;
   }
   Ok(())
 }
