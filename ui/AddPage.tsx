@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Dialog, Grid, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { Loop } from '@mui/icons-material';
 import { AppHeader, PageProps, PasswordField, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
@@ -25,41 +25,30 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
 
   return (
     <Dialog open={open} onClose={onClose} onKeyDown={e => e.key == 'Enter' && onClose()}>
-      <Grid container spacing={2} width='25rem' margin='0 1rem 1rem 0rem' textAlign='center' alignItems='center'>
-        <Grid item xs={12}>
-          <Typography>Generate Password</Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Paper sx={{ padding:'1rem'}}>
-            <Typography align='center' variant='h6' noWrap>{pw}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={2}>
-          <Typography>{length}</Typography>
-        </Grid>
-        <Grid item xs={10}>
-          <Slider value={length} min={10} max={128} valueLabelDisplay='auto' onChange={(_, value) => setLength(value as number)} />
-        </Grid>
-        <Grid item xs={9}>
-          <ToggleButtonGroup value={types} onChange={(_, value) => setTypes(value)}>
-            <ToggleButton disableRipple value='lowercase' sx={{ textTransform: 'none' }}>
-              <Typography>a-z</Typography>
-            </ToggleButton>
-            <ToggleButton disableRipple value='uppercase'>
-              <Typography>A-Z</Typography>
-            </ToggleButton>
-            <ToggleButton disableRipple value='digits'>
-              <Typography>0-9</Typography>
-            </ToggleButton>
-            <ToggleButton disableRipple value='special'>
-              <Typography>!@#$%^&*</Typography>
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Grid>
-        <Grid item xs={3}>
-          <Button variant='contained' onClick={onClose}>Ok</Button>
-        </Grid>
-      </Grid>
+      <DialogTitle textAlign='center'>Generate Password</DialogTitle>
+      <DialogContent sx={{ margin: '0 1rem 0 1rem' }}>
+        <Paper sx={{ width: '25rem', padding:'1rem', marginBottom: '1rem' }}>
+          <Typography align='center' variant='h6' noWrap>{pw}</Typography>
+        </Paper>
+        <Slider sx={{ width: '24rem', marginLeft: '0.5rem'}} value={length} min={10} max={128} marks={[{ value: length, label: length }]} onChange={(_, value) => setLength(value as number)}/>
+      </DialogContent>
+      <DialogActions style={{ justifyContent: 'space-between', margin: "0 3rem 1rem 3rem" }}>
+        <ToggleButtonGroup value={types} onChange={(_, value) => setTypes(value)}>
+          <ToggleButton disableRipple value='lowercase' sx={{ textTransform: 'none' }}>
+            <Typography>a-z</Typography>
+          </ToggleButton>
+          <ToggleButton disableRipple value='uppercase'>
+            <Typography>A-Z</Typography>
+          </ToggleButton>
+          <ToggleButton disableRipple value='digits'>
+            <Typography>0-9</Typography>
+          </ToggleButton>
+          <ToggleButton disableRipple value='special'>
+            <Typography>!@#$%^&*</Typography>
+          </ToggleButton>
+        </ToggleButtonGroup>
+        <Button variant='contained' onClick={onClose}>Ok</Button>
+      </DialogActions>
     </Dialog>
   );
 }
