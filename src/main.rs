@@ -16,17 +16,14 @@ use crate::database::CredentialsDatabase;
 use crate::error::Error;
 
 pub static APP_FOLDER: Lazy<PathBuf> = Lazy::new(|| {
-  let base_folder = if cfg!(target_os = "windows") {
-    std::env::var("APPDATA").expect("$APPDATA not set!")
+  if cfg!(target_os = "windows") {
+    let appdata = std::env::var("APPDATA").expect("$APPDATA not set!");
+    [&appdata, "tauri-pw-manager"].iter().collect()
   } else {
-    std::env::var("HOME").expect("$HOME not set!")
-  };
-  [&base_folder, ".tauri-pw-manager"].iter().collect()
+    let home = std::env::var("HOME").expect("$HOME not set!");
+    [&home, ".config", "tauri-pw-manager"].iter().collect()
+  }
 });
-
-fn user_db_file(username: &str) -> PathBuf {
-  APP_FOLDER.join(format!("{username}.pwdb"))
-}
 
 #[derive(Debug, Default)]
 struct UserSession {
@@ -129,7 +126,7 @@ fn login(username: String, password: String, session: State<'_, Mutex<Option<Use
   if session.is_some() {
     return Err(Error::Unexpected);
   }
-  let file = user_db_file(&username);
+  let file = APP_FOLDER.join(format!("{username}.pwdb"));
   if !file.exists() {
     return Err(Error::InvalidCredentials);
   }
@@ -162,7 +159,7 @@ fn create_account(username: String, password: String, session: State<'_, Mutex<O
   if session.is_some() {
     return Err(Error::Unexpected);
   }
-  let file = user_db_file(&username);
+  let file = APP_FOLDER.join(format!("{username}.pwdb"));
   if file.exists() {
     return Err(Error::UsernameTaken);
   }
