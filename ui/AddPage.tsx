@@ -33,19 +33,14 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
         <Slider sx={{ width: '24rem', marginLeft: '0.5rem'}} value={length} min={10} max={128} marks={[{ value: length, label: length }]} onChange={(_, value) => setLength(value as number)}/>
       </DialogContent>
       <DialogActions style={{ justifyContent: 'space-between', margin: "0 3rem 1rem 3rem" }}>
-        <ToggleButtonGroup value={types} onChange={(_, value) => setTypes(value)}>
-          <ToggleButton disableRipple value='lowercase' sx={{ textTransform: 'none' }}>
-            <Typography>a-z</Typography>
-          </ToggleButton>
-          <ToggleButton disableRipple value='uppercase'>
-            <Typography>A-Z</Typography>
-          </ToggleButton>
-          <ToggleButton disableRipple value='digits'>
-            <Typography>0-9</Typography>
-          </ToggleButton>
-          <ToggleButton disableRipple value='special'>
-            <Typography>!@#$%^&*</Typography>
-          </ToggleButton>
+        <ToggleButtonGroup value={types} onChange={(_, value) => value.length && setTypes(value)}>
+          {
+            [['lowercase', 'a-z'], ['uppercase', 'A-Z'], ['digits', '0-9'], ['special', '!@#$%^&*']].map(([value, text]) =>
+              <ToggleButton disableRipple value={value} sx={{ textTransform: 'none' }}>
+                <Typography>{text}</Typography>
+              </ToggleButton>
+            )
+          }
         </ToggleButtonGroup>
         <Button variant='contained' onClick={onClose}>Ok</Button>
       </DialogActions>
