@@ -5,7 +5,7 @@ import { useAsyncEffect, PageProps } from './utils';
 import { CredentialsDatabase, fetch_credentials, remove_credentials, copy_to_clipboard } from './backend';
 
 export function StartPage({ goToPage, showAlert }: PageProps) {
-  const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
+  const [credentials, setCredentials] = useState({ username: '', credentials: {} } as CredentialsDatabase);
   const [expanded, setExpanded] = useState('');
   const [credentialsToRemove, setCredentialsToRemove] = useState('');
 
@@ -31,7 +31,7 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
     setCredentialsToRemove('');
   }
 
-  return (
+  return <>
     <Stack spacing={1} alignItems='center'>
       <Typography variant='h5' marginY='2rem'>Credentials</Typography>
       {
@@ -62,14 +62,14 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
             </Accordion>
           )
       }
-      <Fab children={<Add/>} color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}/>
-      <Dialog open={!!credentialsToRemove} onClose={() => onRemoveCredentials(false)}>
-        <DialogContent>Delete credentials?</DialogContent>
-        <DialogActions>
-          <Button onClick={() => onRemoveCredentials(false)}>Cancel</Button>
-          <Button onClick={() => onRemoveCredentials(true)}>Yes</Button>
-        </DialogActions>
-      </Dialog>
     </Stack>
-  );
+    <Fab children={<Add/>} color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}/>
+    <Dialog open={!!credentialsToRemove} onClose={() => onRemoveCredentials(false)}>
+    <DialogContent>Delete credentials?</DialogContent>
+    <DialogActions style={{ justifyContent: 'space-between', margin: "0 2rem 10px 2rem" }}>
+      <Button variant='contained' onClick={() => onRemoveCredentials(true)}>Delete</Button>
+      <Button onClick={() => onRemoveCredentials(false)}>Cancel</Button>
+    </DialogActions>
+    </Dialog>
+  </>;
 }
