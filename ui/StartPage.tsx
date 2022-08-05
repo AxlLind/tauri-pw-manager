@@ -65,11 +65,11 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
     </Stack>
     <Fab children={<Add/>} color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}/>
     <Dialog open={!!credentialsToRemove} onClose={() => onRemoveCredentials(false)}>
-    <DialogContent>Delete credentials?</DialogContent>
-    <DialogActions style={{ justifyContent: 'space-between', margin: "0 2rem 10px 2rem" }}>
-      <Button variant='contained' onClick={() => onRemoveCredentials(true)}>Delete</Button>
-      <Button onClick={() => onRemoveCredentials(false)}>Cancel</Button>
-    </DialogActions>
+      <DialogContent>Delete credentials?</DialogContent>
+      <DialogActions style={{ justifyContent: 'space-between', margin: "0 2rem 10px 2rem" }}>
+        <Button variant='contained' onClick={() => onRemoveCredentials(true)}>Delete</Button>
+        <Button onClick={() => onRemoveCredentials(false)}>Cancel</Button>
+      </DialogActions>
     </Dialog>
   </>;
 }
