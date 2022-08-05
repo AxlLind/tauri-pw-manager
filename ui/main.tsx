@@ -52,9 +52,13 @@ const backPages = { login: undefined, signup: 'login', start: 'login', add: 'sta
 const pageComponents = { login: LoginPage, signup: SignUpPage, start: StartPage, add: AddPage };
 
 function App() {
-  const [page, goToPage] = useState('login' as Page);
+  const [page, setPage] = useState('login' as Page);
   const [{ m, severity }, setMessage] = useState({ m: '', severity: 'error' as AlertColor });
   const [showMessage, setShowMessage] = useState(false);
+  const goToPage = (page: Page) => {
+    setPage(page);
+    setShowMessage(false);
+  };
   const showAlert = (m: string, severity: AlertColor = 'error') => {
     setMessage({ m, severity });
     setShowMessage(true);
