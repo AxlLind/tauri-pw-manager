@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
 import { Loop } from '@mui/icons-material';
 import { PageProps, PasswordField, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
@@ -8,6 +8,7 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [openTooltip, setOpenToolip] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [pw, setPw] = useState('');
   const [length, setLength] = useState(16);
@@ -21,7 +22,6 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
       throw Error(res.error);
     setPw(res);
   }, [open, length, types]);
-
 
   const onClickAddCredentials = async () => {
     if (name === '') return showAlert('Name missing.');
@@ -44,7 +44,9 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
       <div>
         <PasswordField label='Password' value={password} onChange={setPassword}/>
-        <IconButton children={<Loop/>} sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenDialog(true)}/>
+        <Tooltip title='Generate password' disableHoverListener onMouseEnter={() => setOpenToolip(true)} onMouseLeave={() => setOpenToolip(false)} open={!openDialog && openTooltip}>
+          <IconButton children={<Loop/>} sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenDialog(true)}/>
+        </Tooltip>
       </div>
       <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
     </Stack>

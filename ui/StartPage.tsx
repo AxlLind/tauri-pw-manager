@@ -63,7 +63,9 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
           )
       }
     </Stack>
-    <Fab children={<Add/>} color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}/>
+    <Tooltip title='Add credentials' placement='left'>
+      <Fab children={<Add/>} color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}/>
+    </Tooltip>
     <Dialog open={!!credentialsToRemove} onClose={() => onRemoveCredentials(false)}>
       <DialogContent>Delete credentials?</DialogContent>
       <DialogActions style={{ justifyContent: 'space-between', margin: "0 2rem 10px 2rem" }}>

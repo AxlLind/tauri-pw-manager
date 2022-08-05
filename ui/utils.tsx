@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { IconButton, AlertColor, TextField, InputAdornment } from '@mui/material';
+import { IconButton, AlertColor, TextField, InputAdornment, Tooltip } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 export type Page = 'login' | 'signup' | 'start' | 'add';
@@ -14,7 +14,9 @@ export function PasswordField({ label, value, onChange }: { label: string, value
   const [show, setShow] = useState(false);
   const endAdornment = (
     <InputAdornment position="end">
-      <IconButton children={show ? <VisibilityOff/> : <Visibility/>} onClick={() => setShow(!show)} edge="end"/>
+      <Tooltip title={show ? 'hide' : 'show'}>
+        <IconButton children={show ? <VisibilityOff/> : <Visibility/>} onClick={() => setShow(!show)} edge="end"/>
+      </Tooltip>
     </InputAdornment>
   );
   return <TextField label={label} value={value} onChange={e => onChange(e.target.value)} type={show ? 'text' : 'password'} InputProps={{ endAdornment }}/>;
