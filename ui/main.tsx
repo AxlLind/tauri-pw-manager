@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import React, { useState } from 'react';
-import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor, AppBar, Toolbar, IconButton, Typography } from '@mui/material';
+import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor, IconButton } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { Page } from './utils';
 import { LoginPage } from './LoginPage';
@@ -63,24 +63,15 @@ function App() {
     setMessage({ m, severity });
     setShowMessage(true);
   };
-  return (
-    <div style={{ height: '100vh' }}>
-      {backPages[page] &&
-        <AppBar position='relative' style={{ height: '64px' }}>
-          <Toolbar>
-            <IconButton children={<ArrowBack/>} edge='start' onClick={() => goToPage(backPages[page] as Page)}/>
-            <Typography>Tauri PW manager</Typography>
-          </Toolbar>
-        </AppBar>
-      }
-      <div style={{ height: `calc(100% - ${backPages[page] ? 64 : 0}px)`, display: 'flex', justifyContent: 'center' }}>
-        {React.createElement(pageComponents[page], { goToPage, showAlert })}
-      </div>
-      <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
-        <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>
-      </Snackbar>
+  return <>
+    {backPages[page] && <IconButton children={<ArrowBack/>} sx={{ position: 'fixed', top: 10, left: 10 }} onClick={() => goToPage(backPages[page] as Page)}/>}
+    <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', overflow: 'scroll' }}>
+      {React.createElement(pageComponents[page], { goToPage, showAlert })}
     </div>
-  );
+    <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
+      <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>
+    </Snackbar>
+  </>;
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
