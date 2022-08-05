@@ -4,7 +4,7 @@ import { Add, ExpandMore, Person, Key, Delete } from '@mui/icons-material';
 import { useAsyncEffect, AppHeader, PageProps } from './utils';
 import { CredentialsDatabase, fetch_credentials, remove_credentials, copy_to_clipboard } from './backend';
 
-function StartPage({ goToPage, showAlert }: PageProps) {
+export function StartPage({ goToPage, showAlert }: PageProps) {
   const [credentials, setCredentials] = useState({ username: '', credentials: {}} as CredentialsDatabase);
   const [expanded, setExpanded] = useState('');
   const [credentialsToRemove, setCredentialsToRemove] = useState('');
@@ -74,5 +74,3 @@ function StartPage({ goToPage, showAlert }: PageProps) {
     </Stack>
   </>;
 }
-
-export { StartPage };

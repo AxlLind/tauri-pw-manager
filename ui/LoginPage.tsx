@@ -3,7 +3,7 @@ import { Stack, Button, TextField, Typography } from '@mui/material';
 import { useAsyncEffect, PageProps, PasswordField } from './utils';
 import { login, logout } from './backend';
 
-function LoginPage({ goToPage, showAlert }: PageProps) {
+export function LoginPage({ goToPage, showAlert }: PageProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -30,5 +30,3 @@ function LoginPage({ goToPage, showAlert }: PageProps) {
     </Stack>
   );
 }
-
-export { LoginPage };

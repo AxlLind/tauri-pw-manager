@@ -48,7 +48,7 @@ function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setO
   );
 }
 
-function AddPage({ goToPage, showAlert }: PageProps) {
+export function AddPage({ goToPage, showAlert }: PageProps) {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -78,5 +78,3 @@ function AddPage({ goToPage, showAlert }: PageProps) {
     </Stack>
   </>;
 }
-
-export { AddPage };

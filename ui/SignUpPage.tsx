@@ -3,7 +3,7 @@ import { Stack, Button, TextField, Typography } from '@mui/material';
 import { AppHeader, PageProps, PasswordField } from './utils';
 import { create_account } from './backend';
 
-function SignUpPage({ goToPage, showAlert }: PageProps) {
+export function SignUpPage({ goToPage, showAlert }: PageProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCopy, setPasswordCopy] = useState('');
@@ -28,5 +28,3 @@ function SignUpPage({ goToPage, showAlert }: PageProps) {
     </Stack>
   </>;
 }
-
-export { SignUpPage };
