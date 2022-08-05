@@ -63,23 +63,25 @@ function App() {
     setMessage({ m, severity });
     setShowMessage(true);
   };
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline/>
-      {backPages[page] &&
-        <AppBar position='static'>
-          <Toolbar>
-            <IconButton children={<ArrowBack/>} edge='start' onClick={() => goToPage(backPages[page] as Page)}/>
-            <Typography>Tauri PW manager</Typography>
-          </Toolbar>
-        </AppBar>
-      }
-      {React.createElement(pageComponents[page], { goToPage, showAlert })}
-      <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
-        <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>
-      </Snackbar>
-    </ThemeProvider>
-  );
+  return <>
+    {backPages[page] &&
+      <AppBar position='static'>
+        <Toolbar>
+          <IconButton children={<ArrowBack/>} edge='start' onClick={() => goToPage(backPages[page] as Page)}/>
+          <Typography>Tauri PW manager</Typography>
+        </Toolbar>
+      </AppBar>
+    }
+    {React.createElement(pageComponents[page], { goToPage, showAlert })}
+    <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
+      <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>
+    </Snackbar>
+  </>;
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(<App/>);
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <ThemeProvider theme={theme}>
+    <CssBaseline/>
+    <App/>
+  </ThemeProvider>
+);
