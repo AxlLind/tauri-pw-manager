@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Stack, Fab, Accordion, AccordionSummary, Typography, AccordionDetails, IconButton, Paper, Tooltip, Dialog, DialogContent, DialogActions, Button } from '@mui/material';
 import { Add, ExpandMore, Person, Key, Delete } from '@mui/icons-material';
-import { useAsyncEffect, AppHeader, PageProps } from './utils';
+import { useAsyncEffect, PageProps } from './utils';
 import { CredentialsDatabase, fetch_credentials, remove_credentials, copy_to_clipboard } from './backend';
 
 export function StartPage({ goToPage, showAlert }: PageProps) {
@@ -31,8 +31,7 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
     setCredentialsToRemove('');
   }
 
-  return <>
-    <AppHeader goToPage={goToPage} backPage='login'/>
+  return (
     <Stack spacing={1} alignItems='center'>
       <Typography variant='h5' marginY='2rem'>Credentials</Typography>
       {
@@ -72,5 +71,5 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
         </DialogActions>
       </Dialog>
     </Stack>
-  </>;
+  );
 }

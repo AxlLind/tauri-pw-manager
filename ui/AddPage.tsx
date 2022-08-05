@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { Loop } from '@mui/icons-material';
-import { AppHeader, PageProps, PasswordField, useAsyncEffect } from './utils';
+import { PageProps, PasswordField, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
 
 function GenPasswordDialog({ open, setOpen, setPassword }: { open: boolean, setOpen: (b: boolean) => void, setPassword: (pw: string) => void}) {
@@ -63,8 +63,7 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
     goToPage('start');
   };
 
-  return <>
-    <AppHeader goToPage={goToPage} backPage='start'/>
+  return (
     <Stack spacing={3} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
       <Typography variant='h5' marginTop='2rem'>Add Credentials</Typography>
       <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
@@ -76,5 +75,5 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
       <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
       <GenPasswordDialog open={openDialog} setOpen={setOpenDialog} setPassword={setPassword} />
     </Stack>
-  </>;
+  );
 }

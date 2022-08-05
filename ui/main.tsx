@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import React, { useState } from 'react';
-import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor } from '@mui/material';
+import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor, AppBar, Toolbar, IconButton, Typography } from '@mui/material';
+import { ArrowBack } from '@mui/icons-material';
 import { Page } from './utils';
 import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
@@ -21,16 +22,10 @@ const theme = createTheme({
       secondary: '#57c7ff',
       disabled: 'rgba(255, 255, 255, 0.5)'
     },
-    primary: {
-      main: '#ff6ac1'
-    },
-    secondary: {
-      main: '#ff6ac1'
-    },
+    primary: { main: '#ff6ac1' },
+    secondary: { main: '#ff6ac1' },
   },
-  typography: {
-    fontFamily: 'CascadiaMono'
-  },
+  typography: { fontFamily: 'CascadiaMono' },
   components: {
     MuiTextField: {
       defaultProps: {
@@ -53,9 +48,10 @@ const theme = createTheme({
   }
 });
 
-const pages = { login: LoginPage, signup: SignUpPage, start: StartPage, add: AddPage };
+const backPages = { login: undefined, signup: 'login', start: 'login', add: 'start' };
+const pageComponents = { login: LoginPage, signup: SignUpPage, start: StartPage, add: AddPage };
 
-function PageRouter() {
+function App() {
   const [page, goToPage] = useState('login' as Page);
   const [{ m, severity }, setMessage] = useState({ m: '', severity: 'error' as AlertColor });
   const [showMessage, setShowMessage] = useState(false);
@@ -63,17 +59,23 @@ function PageRouter() {
     setMessage({ m, severity });
     setShowMessage(true);
   };
-  return <>
-    {React.createElement(pages[page], { goToPage, showAlert })}
-    <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
-      <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>
-    </Snackbar>
-  </>;
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
+      {backPages[page] &&
+        <AppBar position='static'>
+          <Toolbar>
+            <IconButton children={<ArrowBack/>} edge='start' onClick={() => goToPage(backPages[page] as Page)}/>
+            <Typography>Tauri PW manager</Typography>
+          </Toolbar>
+        </AppBar>
+      }
+      {React.createElement(pageComponents[page], { goToPage, showAlert })}
+      <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
+        <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>
+      </Snackbar>
+    </ThemeProvider>
+  );
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <ThemeProvider theme={theme}>
-    <CssBaseline/>
-    <PageRouter/>
-  </ThemeProvider>
-);
+ReactDOM.createRoot(document.getElementById('root')!).render(<App/>);

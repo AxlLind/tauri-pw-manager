@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Stack, Button, TextField, Typography } from '@mui/material';
-import { AppHeader, PageProps, PasswordField } from './utils';
+import { PageProps, PasswordField } from './utils';
 import { create_account } from './backend';
 
 export function SignUpPage({ goToPage, showAlert }: PageProps) {
@@ -17,8 +17,7 @@ export function SignUpPage({ goToPage, showAlert }: PageProps) {
     goToPage('start');
   };
 
-  return <>
-    <AppHeader goToPage={goToPage} backPage='login'/>
+  return (
     <Stack spacing={3} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
       <Typography variant='h5' marginTop='2rem'>Create an account</Typography>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />
@@ -26,5 +25,5 @@ export function SignUpPage({ goToPage, showAlert }: PageProps) {
       <PasswordField label='Retype Password' value={passwordCopy} onChange={setPasswordCopy} />
       <Button variant='contained' onClick={onClickLogin}>Create</Button>
     </Stack>
-  </>;
+  );
 }
