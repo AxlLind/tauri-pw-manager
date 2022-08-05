@@ -38,8 +38,8 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
   };
 
   return <>
-    <Stack spacing={3} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
-      <Typography variant='h5' marginTop='2rem'>Add Credentials</Typography>
+    <Stack spacing={3} alignItems='center' justifyContent='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
+      <Typography variant='h5'>Add Credentials</Typography>
       <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
       <div>

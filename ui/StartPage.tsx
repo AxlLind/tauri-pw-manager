@@ -32,8 +32,8 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
   }
 
   return <>
-    <Stack spacing={1} alignItems='center'>
-      <Typography variant='h5' marginY='2rem'>Credentials</Typography>
+    <Stack spacing={1} alignItems='center' justifyContent='center'>
+      <Typography variant='h5'>Credentials</Typography>
       {
         Object.entries(credentials.credentials)
           .sort(([n1,], [n2,]) => n1 < n2 ? -1 : 1)
