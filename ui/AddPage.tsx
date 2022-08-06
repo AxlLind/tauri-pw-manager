@@ -4,6 +4,8 @@ import { Loop } from '@mui/icons-material';
 import { PageProps, PasswordField, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
 
+const pwCharColor = (c: string) => '!@#$%^&*'.includes(c) ? '#57c7ff' : '0123456789'.includes(c) ? '#ffbc58' : '#ffffff';
+
 export function AddPage({ goToPage, showAlert }: PageProps) {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -51,10 +53,10 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
     <Dialog open={openDialog} onClose={onDialogClose} onKeyDown={e => e.key == 'Enter' && onDialogClose()}>
       <DialogTitle textAlign='center'>Generate Password</DialogTitle>
       <DialogContent sx={{ margin: '0 1rem 0 1rem' }}>
-        <Paper sx={{ width: '25rem', padding:'1rem', marginBottom: '1rem' }}>
-          <Typography align='center' variant='h6' noWrap>{pw}</Typography>
+        <Paper sx={{ width: '25rem', padding:'1rem', display: 'flex', justifyContent: 'center' }}>
+          {[...pw.length <= 39 ? pw : `${pw.substring(0, 39-3)}...`].map(c => <span style={{ color: pwCharColor(c) }}>{c}</span>)}
         </Paper>
-        <Slider sx={{ width: '24rem', marginLeft: '0.5rem'}} value={length} min={10} max={128} marks={[{ value: length, label: length }]} onChange={(_, value) => setLength(value as number)}/>
+        <Slider sx={{ width: '24rem', marginLeft: '0.5rem', marginTop: '1rem'}} value={length} min={10} max={128} marks={[{ value: length, label: length }]} onChange={(_, value) => setLength(value as number)}/>
       </DialogContent>
       <DialogActions style={{ justifyContent: 'space-between', margin: "0 3rem 1rem 3rem" }}>
         <Tooltip title='toggle included characters'>
