@@ -22,13 +22,11 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
     showAlert(`${thing} copied to clipboard`, 'success');
   };
 
-  const onRemoveCredentials = async (remove: boolean) => {
-    if (remove) {
-      const res = await remove_credentials(credentialsToRemove);
-      if ('error' in res) return showAlert(res.error);
-      setCredentials(res);
-    }
+  const onRemoveCredentials = async () => {
     setCredentialsToRemove('');
+    const res = await remove_credentials(credentialsToRemove);
+    if ('error' in res) return showAlert(res.error);
+    setCredentials(res);
   }
 
   return <>
@@ -66,11 +64,11 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
     <Tooltip title='Add credentials' placement='left'>
       <Fab children={<Add/>} color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}/>
     </Tooltip>
-    <Dialog open={!!credentialsToRemove} onClose={() => onRemoveCredentials(false)}>
+    <Dialog open={!!credentialsToRemove} onClose={() => setCredentialsToRemove('')}>
       <DialogContent>Delete credentials?</DialogContent>
       <DialogActions style={{ justifyContent: 'space-between', margin: "0 2rem 10px 2rem" }}>
-        <Button variant='contained' onClick={() => onRemoveCredentials(true)}>Delete</Button>
-        <Button onClick={() => onRemoveCredentials(false)}>Cancel</Button>
+        <Button variant='contained' onClick={onRemoveCredentials}>Delete</Button>
+        <Button onClick={() => setCredentialsToRemove('')}>Cancel</Button>
       </DialogActions>
     </Dialog>
   </>;
