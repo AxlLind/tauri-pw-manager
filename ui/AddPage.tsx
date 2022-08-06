@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
 import { Loop } from '@mui/icons-material';
 import { PageProps, PasswordField, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
@@ -36,12 +36,12 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
       <Typography variant='h5'>Add Credentials</Typography>
       <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
-      <div>
+      <Box>
         <PasswordField label='Password' value={password} onChange={setPassword}/>
         <Tooltip title='Generate password' disableHoverListener onMouseEnter={() => setOpenToolip(true)} onMouseLeave={() => setOpenToolip(false)} open={!openDialog && openTooltip}>
           <IconButton children={<Loop/>} sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenDialog(true)}/>
         </Tooltip>
-      </div>
+      </Box>
       <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
     </Stack>
     <Dialog open={openDialog} onClose={() => setOpenDialog(false)} onKeyDown={e => e.key == 'Enter' && setOpenDialog(false)}>

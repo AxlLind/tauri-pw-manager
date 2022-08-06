@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import React, { useState } from 'react';
-import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor, IconButton } from '@mui/material';
+import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor, IconButton, Box } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { Page } from './utils';
 import { LoginPage } from './LoginPage';
@@ -65,11 +65,11 @@ function App() {
   };
   return <>
     {page !== 'login' && <IconButton children={<ArrowBack/>} sx={{ position: 'fixed', top: 10, left: 10 }} onClick={() => goToPage(backPages[page] as Page)}/>}
-    <div style={{ height: '100vh', display: 'flex' }}>
-      <div style={{ margin: 'auto' }}>
+    <Box height='100vh' display='flex'>
+      <Box margin='auto'>
         {React.createElement(pageComponents[page], { goToPage, showAlert })}
-      </div>
-    </div>
+      </Box>
+    </Box>
     <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
       <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>
     </Snackbar>
