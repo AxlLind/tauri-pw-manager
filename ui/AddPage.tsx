@@ -15,13 +15,11 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
   const [types, setTypes] = useState(['lowercase', 'uppercase', 'digits', 'special']);
 
   useAsyncEffect(async () => {
-    if (!open)
-      return;
+    if (!openDialog) return;
     const res = await generate_password(length, types);
-    if (typeof res !== 'string')
-      throw Error(res.error);
+    if (typeof res !== 'string') return showAlert(res.error);
     setPw(res);
-  }, [open, length, types]);
+  }, [openDialog, length, types]);
 
   const onClickAddCredentials = async () => {
     if (name === '') return showAlert('Name missing.');
