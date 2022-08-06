@@ -27,7 +27,7 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
     if (username === '') return showAlert('Username missing.');
     if (password === '') return showAlert('Password missing.');
     const res = await add_credentials(name, username, password);
-    if ('error' in res) return showAlert(res.error);
+    if (res?.error) return showAlert(res.error);
     goToPage('start');
   };
 

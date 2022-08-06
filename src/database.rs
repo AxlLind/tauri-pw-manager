@@ -27,4 +27,12 @@ impl CredentialsDatabase {
   pub fn remove(&mut self, name: &str) -> bool {
     self.credentials.remove(name).is_some()
   }
+
+  pub fn entry(&self, name: &str) -> Option<&Credential> {
+    self.credentials.get(name)
+  }
+
+  pub fn entries(&self) -> impl Iterator<Item = &str> {
+    self.credentials.iter().map(|(k,_)| k.as_str())
+  }
 }

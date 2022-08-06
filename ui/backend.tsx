@@ -5,19 +5,9 @@ export interface BackendError {
   error: string
 }
 
-export interface CredentialsDatabase {
-  username: string,
-  credentials: {
-    [key: string]: {
-      username: string,
-      password: string,
-    }
-  }
-};
-
 async function call<T = undefined>(fn: string, args?: InvokeArgs): Promise<T | BackendError> {
   try {
-    return await invoke(fn, args) as T;
+    return await invoke<T>(fn, args);
   } catch (e) {
     return e as BackendError;
   }
@@ -29,12 +19,12 @@ export const logout = () => call('logout');
 
 export const create_account = (username: string, password: string) => call('create_account', { username, password });
 
-export const fetch_credentials = () => call<CredentialsDatabase>('fetch_credentials');
+export const fetch_credentials = () => call<string[]>('fetch_credentials');
 
-export const add_credentials = (name: string, username: string, password: string) => call<CredentialsDatabase>('add_credentials', { name, username, password });
+export const add_credentials = (name: string, username: string, password: string) => call('add_credentials', { name, username, password });
 
-export const remove_credentials = (name: string) => call<CredentialsDatabase>('remove_credentials', { name });
+export const remove_credentials = (name: string) => call('remove_credentials', { name });
 
 export const generate_password = (length: number, types: string[]) => call<string>('generate_password', { length, types });
 
-export const copy_to_clipboard = (text: string) => call('copy_to_clipboard', { text });
+export const copy_to_clipboard = (name: string, thing: 'username' | 'password') => call('copy_to_clipboard', { name, thing });

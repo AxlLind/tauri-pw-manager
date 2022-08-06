@@ -48,8 +48,17 @@ fn save_database(session: &UserSession) -> Result<(), Error> {
 }
 
 #[tauri::command]
-fn copy_to_clipboard(text: String) -> Result<(), Error> {
-  Clipboard::new()?.set_text(text)?;
+fn copy_to_clipboard(name: String, thing: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
+  log::debug!("Copying to clipboard: name={name}, thing={thing}");
+  let mut session_guard = session_mutex.lock()?;
+  let session = session_guard.as_mut().ok_or(Error::InvalidCredentials)?;
+  let entry = session.db.entry(&name).ok_or(Error::InvalidParameter)?;
+  let text = match thing.as_str() {
+    "username" => &entry.username,
+    "password" => &entry.password,
+    _ => return Err(Error::InvalidParameter),
+  };
+  Clipboard::new()?.set_text(text.clone())?;
   Ok(())
 }
 
@@ -76,15 +85,15 @@ fn generate_password(length: usize, types: Vec<String>) -> Result<String, Error>
 }
 
 #[tauri::command]
-fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, Error> {
+fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<Vec<String>, Error> {
   log::debug!("Fetching credentials");
   let session_guard = session_mutex.lock()?;
   let session = session_guard.as_ref().ok_or(Error::InvalidCredentials)?;
-  Ok(session.db.clone())
+  Ok(session.db.entries().map(String::from).collect())
 }
 
 #[tauri::command]
-fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, Error> {
+fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
   log::info!("Removing credentials, name={name}");
   let mut session_guard = session_mutex.lock()?;
   let session = session_guard.as_mut().ok_or(Error::InvalidCredentials)?;
@@ -92,11 +101,11 @@ fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSe
     return Err(Error::InvalidParameter);
   }
   save_database(session)?;
-  Ok(session.db.clone())
+  Ok(())
 }
 
 #[tauri::command]
-fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<CredentialsDatabase, Error> {
+fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
   log::info!("Adding credential, name={name}");
   if name.is_empty() || username.is_empty() || password.is_empty() {
     return Err(Error::InvalidCredentials);
@@ -105,7 +114,7 @@ fn add_credentials(name: String, username: String, password: String, session_mut
   let session = session_guard.as_mut().ok_or(Error::InvalidCredentials)?;
   session.db.add(name, username, password);
   save_database(session)?;
-  Ok(session.db.clone())
+  Ok(())
 }
 
 #[tauri::command]
