@@ -32,7 +32,7 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
   }
 
   return <>
-    <Stack spacing={1} alignItems='center' justifyContent='center'>
+    <Stack spacing={1} alignItems='center'>
       <Typography variant='h5' marginTop='2rem'>Credentials</Typography>
       {
         Object.entries(credentials.credentials)

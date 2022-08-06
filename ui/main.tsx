@@ -65,8 +65,8 @@ function App() {
   };
   return <>
     {page !== 'login' && <IconButton children={<ArrowBack/>} sx={{ position: 'fixed', top: 10, left: 10 }} onClick={() => goToPage(backPages[page] as Page)}/>}
-    <div style={{ height: '100vh', display: 'flex', justifyContent: 'center' }}>
-      <div style={{ maxHeight: '100vh', width: '100%', margin: 'auto', overflow: 'auto' }}>
+    <div style={{ height: '100vh', display: 'flex' }}>
+      <div style={{ margin: 'auto' }}>
         {React.createElement(pageComponents[page], { goToPage, showAlert })}
       </div>
     </div>

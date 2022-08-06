@@ -18,7 +18,7 @@ export function SignUpPage({ goToPage, showAlert }: PageProps) {
   };
 
   return (
-    <Stack spacing={3} alignItems='center' justifyContent='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
+    <Stack spacing={3} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
       <Typography variant='h5'>Create an account</Typography>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />
       <PasswordField label='Master Password' value={password} onChange={setPassword} />

@@ -18,7 +18,7 @@ export function LoginPage({ goToPage, showAlert }: PageProps) {
   };
 
   return (
-    <Stack spacing={3} alignItems='center' justifyContent='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
+    <Stack spacing={3} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
       <Typography variant='h2'>Tauri PW Manager</Typography>
       <Typography variant='h5'>Welcome back</Typography>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />
