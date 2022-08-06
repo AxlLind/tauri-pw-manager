@@ -36,7 +36,7 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
       <Typography variant='h5' marginTop='2rem'>Credentials</Typography>
       {
         credentials.sort().map(name =>
-           <Paper sx={{ width: '30rem', display: 'flex', padding: '0.5rem 1rem' }} elevation={4}>
+          <Paper sx={{ width: '30rem', display: 'flex', padding: '0.5rem 1rem' }} elevation={4}>
             <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
             <Tooltip title='copy username'>
               <IconButton children={<Person/>} onClick={e => copyValue(e, name, 'username')}/>
