@@ -15,7 +15,7 @@ export function PasswordField({ label, value, onChange }: { label: string, value
   const endAdornment = (
     <InputAdornment position="end">
       <Tooltip title={show ? 'hide' : 'show'}>
-        <IconButton children={show ? <VisibilityOff/> : <Visibility/>} onClick={() => setShow(!show)} edge="end"/>
+        <IconButton children={show ? <VisibilityOff/> : <Visibility/>} tabIndex={-1} onClick={() => setShow(!show)} edge="end"/>
       </Tooltip>
     </InputAdornment>
   );
