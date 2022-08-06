@@ -25,7 +25,7 @@ pub static APP_FOLDER: Lazy<PathBuf> = Lazy::new(|| {
   }
 });
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 struct UserSession {
   file: PathBuf,
   salt: [u8; 12],
@@ -176,9 +176,9 @@ fn create_account(username: String, password: String, session: State<'_, Mutex<O
   let master_key = cryptography::pbkdf2_hmac(password.as_bytes(), &salt);
   let key = cryptography::random_bytes::<32>();
   let (encrypted_key, nonce) = cryptography::encrypt_key(&master_key, &key)?;
-  let db = CredentialsDatabase::new(username.clone());
+  let db = CredentialsDatabase::new(username);
   *session = Some(UserSession { file, salt, nonce, encrypted_key, key, db });
-  save_database(&session.as_ref().unwrap())?;
+  save_database(session.as_ref().unwrap())?;
   Ok(())
 }
 

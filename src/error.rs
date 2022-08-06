@@ -1,6 +1,6 @@
 use serde::{Serialize, ser::SerializeMap};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum Error {
   InvalidCredentials,
   InvalidDatabase,

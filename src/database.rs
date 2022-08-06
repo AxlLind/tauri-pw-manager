@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Debug, Hash, Serialize, Deserialize, Clone)]
+#[derive(Default, Hash, Serialize, Deserialize)]
 pub struct Credential {
   pub username: String,
   pub password: String,
 }
 
-#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct CredentialsDatabase {
   username: String,
   credentials: HashMap<String, Credential>

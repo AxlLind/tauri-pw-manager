@@ -8,7 +8,7 @@ use crate::error::Error;
 
 const AAD_MESSAGE: &[u8] = b"Tauri PW Manager v0.0.1";
 
-#[derive(Debug, Default, Clone)]
+#[derive(Default)]
 pub struct EncryptedBlob<T> {
   iv: [u8; 12],
   tag: [u8; 16],
