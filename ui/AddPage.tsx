@@ -57,13 +57,15 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
         <Slider sx={{ width: '24rem', marginLeft: '0.5rem'}} value={length} min={10} max={128} marks={[{ value: length, label: length }]} onChange={(_, value) => setLength(value as number)}/>
       </DialogContent>
       <DialogActions style={{ justifyContent: 'space-between', margin: "0 3rem 1rem 3rem" }}>
-        <ToggleButtonGroup value={types} onChange={(_, value) => value.length && setTypes(value)}>
-          {[['lowercase', 'a-z'], ['uppercase', 'A-Z'], ['digits', '0-9'], ['special', '!@#$%^&*']].map(([value, text]) =>
-            <ToggleButton disableRipple value={value} sx={{ textTransform: 'none' }}>
-              <Typography>{text}</Typography>
-            </ToggleButton>
-          )}
-        </ToggleButtonGroup>
+        <Tooltip title='toggle included characters'>
+          <ToggleButtonGroup value={types} onChange={(_, value) => value.length && setTypes(value)}>
+            {[['lowercase', 'a-z'], ['uppercase', 'A-Z'], ['digits', '0-9'], ['special', '!@#$%^&*']].map(([value, text]) =>
+              <ToggleButton disableRipple value={value} sx={{ textTransform: 'none' }}>
+                <Typography>{text}</Typography>
+              </ToggleButton>
+            )}
+          </ToggleButtonGroup>
+        </Tooltip>
         <Button variant='contained' onClick={onDialogClose}>Ok</Button>
       </DialogActions>
     </Dialog>
