@@ -89,7 +89,7 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
   log::debug!("Fetching credentials");
   let session_guard = session_mutex.lock()?;
   let session = session_guard.as_ref().ok_or(Error::InvalidCredentials)?;
-  Ok(session.db.entries().map(String::from).collect())
+  Ok(session.db.entries().map(|(k,_)| k.clone()).collect())
 }
 
 #[tauri::command]

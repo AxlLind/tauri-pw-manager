@@ -32,7 +32,7 @@ impl CredentialsDatabase {
     self.credentials.get(name)
   }
 
-  pub fn entries(&self) -> impl Iterator<Item = &str> {
-    self.credentials.iter().map(|(k,_)| k.as_str())
+  pub fn entries(&self) -> impl Iterator<Item = (&String, &Credential)> {
+    self.credentials.iter()
   }
 }
