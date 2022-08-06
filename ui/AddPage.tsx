@@ -12,7 +12,6 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
   const [password, setPassword] = useState('');
   const [openTooltip, setOpenToolip] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [pw, setPw] = useState('');
   const [length, setLength] = useState(16);
   const [types, setTypes] = useState(['lowercase', 'uppercase', 'digits', 'special']);
 
@@ -20,7 +19,7 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
     if (!openDialog) return;
     const res = await generate_password(length, types);
     if (typeof res !== 'string') return showAlert(res.error);
-    setPw(res);
+    setPassword(res);
   }, [openDialog, length, types]);
 
   const onClickAddCredentials = async () => {
@@ -30,11 +29,6 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
     const res = await add_credentials(name, username, password);
     if ('error' in res) return showAlert(res.error);
     goToPage('start');
-  };
-
-  const onDialogClose = () => {
-    setOpenDialog(false);
-    setPassword(pw);
   };
 
   return <>
@@ -50,11 +44,11 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
       </div>
       <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
     </Stack>
-    <Dialog open={openDialog} onClose={onDialogClose} onKeyDown={e => e.key == 'Enter' && onDialogClose()}>
+    <Dialog open={openDialog} onClose={() => setOpenDialog(false)} onKeyDown={e => e.key == 'Enter' && setOpenDialog(false)}>
       <DialogTitle textAlign='center'>Generate Password</DialogTitle>
       <DialogContent sx={{ margin: '0 1rem 0 1rem' }}>
         <Paper sx={{ width: '25rem', padding:'1rem', display: 'flex', justifyContent: 'center' }}>
-          {[...pw.length <= 39 ? pw : `${pw.substring(0, 39-3)}...`].map(c => <span style={{ color: pwCharColor(c) }}>{c}</span>)}
+          {[...password.length <= 39 ? password : `${password.substring(0, 39-3)}...`].map(c => <span style={{ color: pwCharColor(c) }}>{c}</span>)}
         </Paper>
         <Slider sx={{ width: '24rem', marginLeft: '0.5rem', marginTop: '1rem'}} value={length} min={10} max={128} marks={[{ value: length, label: length }]} onChange={(_, value) => setLength(value as number)}/>
       </DialogContent>
@@ -68,7 +62,7 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
             )}
           </ToggleButtonGroup>
         </Tooltip>
-        <Button variant='contained' onClick={onDialogClose}>Ok</Button>
+        <Button variant='contained' onClick={() => setOpenDialog(false)}>Ok</Button>
       </DialogActions>
     </Dialog>
   </>;
