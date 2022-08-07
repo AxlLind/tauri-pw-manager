@@ -187,8 +187,8 @@ fn main() {
     fs::create_dir(&*APP_FOLDER).expect("failed to create app folder");
   }
 
-  logs::initialize().expect("failed to initialize logger");
-  logs::remove_old().expect("failed to remove old logs");
+  logs::initialize(&APP_FOLDER.join("logs")).expect("failed to initialize logger");
+  logs::remove_old(&APP_FOLDER.join("logs")).expect("failed to remove old logs");
 
   let context = tauri::generate_context!();
   tauri::Builder::default()

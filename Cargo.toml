@@ -16,6 +16,9 @@ fern = "0.6"
 log = "0.4"
 chrono = "0.4"
 
+[dev-dependencies]
+tempfile = "3"
+
 [build-dependencies]
 tauri-build = { version = "1.0", features = [] }
 
