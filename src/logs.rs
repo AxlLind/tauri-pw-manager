@@ -51,7 +51,7 @@ mod tests {
   use tempfile::tempdir;
 
   #[test]
-  fn test_remove_old() -> std::io::Result<()> {
+  fn test_remove_old_deletion_dates() -> std::io::Result<()> {
     let dir = tempdir()?;
     let now = Local::now().naive_local();
     for days_old in 0..5 {
@@ -59,13 +59,22 @@ mod tests {
       fs::write(&log, "unittest")?;
     }
     assert_eq!(fs::read_dir(dir.path())?.count(), 5);
-    remove_old(dir.path()).unwrap();
+    remove_old(dir.path()).expect("remove_old should not fail");
     assert_eq!(fs::read_dir(dir.path())?.count(), 3);
+    Ok(())
+  }
 
-    // only '.log' should be removed
+  #[test]
+  fn test_remove_old_invalid_files() -> std::io::Result<()> {
+    let dir = tempdir()?;
+    fs::write(dir.path().join("random_name.log"), "unittest")?;
+    fs::write(dir.path().join("2000-99-99.log"), "unittest")?;
     fs::write(dir.path().join("1984-01-01.txt"), "unittest")?;
-    remove_old(dir.path()).unwrap();
-    assert_eq!(fs::read_dir(dir.path())?.count(), 4);
+    fs::write(dir.path().join("1984-01-01.txt.log"), "unittest")?;
+    fs::create_dir(dir.path().join("nested_dir"))?;
+    assert_eq!(fs::read_dir(dir.path())?.count(), 5);
+    remove_old(dir.path()).expect("remove_old should not fail");
+    assert_eq!(fs::read_dir(dir.path())?.count(), 5);
     Ok(())
   }
 }
