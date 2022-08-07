@@ -1,12 +1,46 @@
-import React, { useState } from 'react';
-import { Stack, Fab, Typography, IconButton, Paper, Tooltip, Dialog, DialogContent, DialogActions, Button } from '@mui/material';
-import { Add, Person, Key, Delete } from '@mui/icons-material';
+import { useState } from 'react';
+import { Stack, Fab, Typography, IconButton, Paper, Tooltip, Dialog, DialogContent, DialogActions, Button, DialogTitle, AlertColor, Divider } from '@mui/material';
+import { Add, Person, Key, Delete, MoreHoriz } from '@mui/icons-material';
 import { useAsyncEffect, PageProps } from './utils';
-import { fetch_credentials, remove_credentials, copy_to_clipboard } from './backend';
+import { fetch_credentials, remove_credentials, copy_to_clipboard, get_credentials_info, Credentials } from './backend';
+
+function CredentialsDialog({ name, onClose, showAlert }: { name: string, onClose: () => void, showAlert: (m: string, severity?: AlertColor) => void }) {
+  const [{ username, password }, setCredentials] = useState<Credentials>({ username: '', password: '' });
+
+  useAsyncEffect(async () => {
+    if (!name) return;
+    const res = await get_credentials_info(name);
+    if ('error' in res) return showAlert(res.error);
+    setCredentials(res);
+  }, [name]);
+
+  return (
+    <Dialog open={!!name} onClose={onClose}>
+      <DialogTitle textAlign='center'>Credentials Details</DialogTitle>
+      <DialogContent>
+        <Paper sx={{ width: '25rem', padding: '1rem' }}>
+          <Typography variant='overline'>Name</Typography>
+          <Typography>{name}</Typography>
+          <Divider/>
+          <Typography variant='overline'>Username</Typography>
+          <Typography noWrap>{username}</Typography>
+          <Divider/>
+          <Typography variant='overline'>Password</Typography>
+          <Typography noWrap>{password}</Typography>
+          <Divider/>
+        </Paper>
+      </DialogContent>
+      <DialogActions sx={{ padding: '0 2rem 1rem 0'}}>
+        <Button variant='contained' onClick={onClose}>Ok</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
 
 export function StartPage({ goToPage, showAlert }: PageProps) {
   const [credentials, setCredentials] = useState([] as string[]);
   const [credentialsToRemove, setCredentialsToRemove] = useState('');
+  const [credentialsToShow, setCredentialsToShow] = useState('');
 
   const populateCredentials = async () => {
     const res = await fetch_credentials();
@@ -16,8 +50,7 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
 
   useAsyncEffect(populateCredentials, []);
 
-  const copyValue = async (e: React.MouseEvent, name: string, thing: 'username' | 'password') => {
-    e.stopPropagation();
+  const copyValue = async (name: string, thing: 'username' | 'password') => {
     const res = await copy_to_clipboard(name, thing);
     console.log(res);
     if (res?.error) return showAlert(res.error);
@@ -39,13 +72,16 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
           <Paper sx={{ width: '30rem', display: 'flex', padding: '0.5rem 1rem' }} elevation={4}>
             <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
             <Tooltip title='copy username'>
-              <IconButton children={<Person/>} onClick={e => copyValue(e, name, 'username')}/>
+              <IconButton children={<Person/>} onClick={() => copyValue(name, 'username')}/>
             </Tooltip>
             <Tooltip title='copy password'>
-              <IconButton children={<Key/>} onClick={e => copyValue(e, name, 'password')}/>
+              <IconButton children={<Key/>} onClick={() => copyValue(name, 'password')}/>
             </Tooltip>
             <Tooltip title='delete credentials'>
-              <IconButton children={<Delete/>} onClick={e => { e.stopPropagation(); setCredentialsToRemove(name); }}/>
+              <IconButton children={<Delete/>} onClick={() => setCredentialsToRemove(name)}/>
+            </Tooltip>
+            <Tooltip title='view credentials'>
+              <IconButton children={<MoreHoriz/>} onClick={() => setCredentialsToShow(name)}/>
             </Tooltip>
           </Paper>
         )
@@ -61,5 +97,6 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
         <Button onClick={() => setCredentialsToRemove('')}>Cancel</Button>
       </DialogActions>
     </Dialog>
+    <CredentialsDialog name={credentialsToShow} onClose={() => setCredentialsToShow('')} showAlert={showAlert}/>
   </>;
 }

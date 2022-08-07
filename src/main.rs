@@ -8,6 +8,7 @@ mod logs;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
+use database::Credential;
 use once_cell::sync::Lazy;
 use arboard::Clipboard;
 use tauri::State;
@@ -82,6 +83,14 @@ fn generate_password(length: usize, types: Vec<String>) -> Result<String, Error>
     .collect::<Result<Vec<_>,_>>()?
     .join("");
   Ok(cryptography::generate_password(alphabet.as_bytes(), length))
+}
+
+#[tauri::command]
+fn get_credentials_info(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<Credential, Error> {
+  log::debug!("Fetching credentials info: name={name}");
+  let session_guard = session_mutex.lock()?;
+  let session = session_guard.as_ref().ok_or(Error::InvalidCredentials)?;
+  session.db.entry(&name).cloned().ok_or(Error::InvalidParameter)
 }
 
 #[tauri::command]
@@ -198,6 +207,7 @@ fn main() {
       login,
       logout,
       fetch_credentials,
+      get_credentials_info,
       add_credentials,
       remove_credentials,
       generate_password,

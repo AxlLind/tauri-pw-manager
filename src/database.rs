@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 
-#[derive(Default, Hash, Serialize, Deserialize)]
+#[derive(Default, Hash, Serialize, Deserialize, Clone)]
 pub struct Credential {
   pub username: String,
   pub password: String,

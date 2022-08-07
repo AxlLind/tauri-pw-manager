@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Stack, Button, TextField, Typography } from '@mui/material';
-import { useAsyncEffect, PageProps, PasswordField } from './utils';
+import { useAsyncEffect, PageProps, PasswordField, AppIcon } from './utils';
 import { login, logout } from './backend';
 
 export function LoginPage({ goToPage, showAlert }: PageProps) {
@@ -19,7 +19,10 @@ export function LoginPage({ goToPage, showAlert }: PageProps) {
 
   return (
     <Stack spacing={3} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
-      <Typography variant='h2'>Tauri PW Manager</Typography>
+      <Stack spacing={1} direction='row' alignItems='center'>
+        <Typography variant='h2'>Vaultoise</Typography>
+        <AppIcon sx={{ width: '5rem', height: '5rem' }}/>
+      </Stack>
       <Typography variant='h5'>Welcome back</Typography>
       <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />
       <PasswordField label='Master Password' value={password} onChange={setPassword} />
