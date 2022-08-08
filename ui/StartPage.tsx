@@ -10,8 +10,8 @@ function CredentialsDialog({ name, onClose, showAlert }: { name: string, onClose
   useAsyncEffect(async () => {
     if (!name) return;
     const res = await get_credentials_info(name);
-    if ('error' in res) return showAlert(res.error);
-    setCredentials(res);
+    if (!res.ok) return showAlert(res.error);
+    setCredentials(res.value);
   }, [name]);
 
   return (
@@ -44,23 +44,22 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
 
   const populateCredentials = async () => {
     const res = await fetch_credentials();
-    if ('error' in res) return showAlert(res.error);
-    setCredentials(res)
+    if (!res.ok) return showAlert(res.error);
+    setCredentials(res.value)
   };
 
   useAsyncEffect(populateCredentials, []);
 
   const copyValue = async (name: string, thing: 'username' | 'password') => {
     const res = await copy_to_clipboard(name, thing);
-    console.log(res);
-    if (res?.error) return showAlert(res.error);
+    if (!res.ok) return showAlert(res.error);
     showAlert(`${thing} copied to clipboard`, 'success');
   };
 
   const onRemoveCredentials = async () => {
     setCredentialsToRemove('');
     const res = await remove_credentials(credentialsToRemove);
-    if (res?.error) return showAlert(res.error);
+    if (!res.ok) return showAlert(res.error);
     await populateCredentials();
   }
 

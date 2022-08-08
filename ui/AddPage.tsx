@@ -18,8 +18,8 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
   useAsyncEffect(async () => {
     if (!openDialog) return;
     const res = await generate_password(length, types);
-    if (typeof res !== 'string') return showAlert(res.error);
-    setPassword(res);
+    if (!res.ok) return showAlert(res.error);
+    setPassword(res.value);
   }, [openDialog, length, types]);
 
   const onClickAddCredentials = async () => {
@@ -27,7 +27,7 @@ export function AddPage({ goToPage, showAlert }: PageProps) {
     if (username === '') return showAlert('Username missing.');
     if (password === '') return showAlert('Password missing.');
     const res = await add_credentials(name, username, password);
-    if (res?.error) return showAlert(res.error);
+    if (!res.ok) return showAlert(res.error);
     goToPage('start');
   };
 

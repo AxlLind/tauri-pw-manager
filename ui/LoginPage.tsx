@@ -12,8 +12,8 @@ export function LoginPage({ goToPage, showAlert }: PageProps) {
   const onClickLogin = async () => {
     if (username === '') return showAlert('Username missing.');
     if (password === '') return showAlert('Master password missing.');
-    const err = await login(username, password);
-    if (err) return showAlert(err.error);
+    const res = await login(username, password);
+    if (!res.ok) return showAlert(res.error);
     goToPage('start');
   };
 

@@ -12,8 +12,8 @@ export function SignUpPage({ goToPage, showAlert }: PageProps) {
     if (username === '') return showAlert('Username missing.');
     if (password === '') return showAlert('Master password missing.');
     if (password !== passwordCopy) return showAlert('Passwords do not match');
-    const err = await create_account(username, password);
-    if (err) return showAlert(err.error);
+    const res = await create_account(username, password);
+    if (!res.ok) return showAlert(res.error);
     goToPage('start');
   };
 
