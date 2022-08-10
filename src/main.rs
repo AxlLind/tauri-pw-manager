@@ -50,7 +50,7 @@ fn save_database(session: &UserSession) -> Result<(), Error> {
 
 #[tauri::command]
 fn copy_to_clipboard(name: String, thing: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
-  log::debug!("Copying to clipboard: name={name}, thing={thing}");
+  logs::debug!("Copying to clipboard", name, thing);
   let mut session_guard = session_mutex.lock()?;
   let session = session_guard.as_mut().ok_or(Error::InvalidCredentials)?;
   let entry = session.db.entry(&name).ok_or(Error::InvalidParameter)?;
@@ -65,7 +65,7 @@ fn copy_to_clipboard(name: String, thing: String, session_mutex: State<'_, Mutex
 
 #[tauri::command]
 fn generate_password(length: usize, types: Vec<String>) -> Result<String, Error> {
-  log::debug!("Generating password: types={:?}", types);
+  logs::debug!("Generating password", types=?types);
   if types.is_empty() {
     return Err(Error::InvalidParameter);
   }
@@ -87,7 +87,7 @@ fn generate_password(length: usize, types: Vec<String>) -> Result<String, Error>
 
 #[tauri::command]
 fn get_credentials_info(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<Credential, Error> {
-  log::debug!("Fetching credentials info: name={name}");
+  logs::debug!("Fetching credentials info", name);
   let session_guard = session_mutex.lock()?;
   let session = session_guard.as_ref().ok_or(Error::InvalidCredentials)?;
   session.db.entry(&name).cloned().ok_or(Error::InvalidParameter)
@@ -95,7 +95,7 @@ fn get_credentials_info(name: String, session_mutex: State<'_, Mutex<Option<User
 
 #[tauri::command]
 fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<Vec<String>, Error> {
-  log::debug!("Fetching credentials");
+  logs::debug!("Fetching credentials");
   let session_guard = session_mutex.lock()?;
   let session = session_guard.as_ref().ok_or(Error::InvalidCredentials)?;
   Ok(session.db.entries().map(|(k,_)| k.clone()).collect())
@@ -103,7 +103,7 @@ fn fetch_credentials(session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Re
 
 #[tauri::command]
 fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
-  log::info!("Removing credentials, name={name}");
+  logs::info!("Removing credentials", name);
   let mut session_guard = session_mutex.lock()?;
   let session = session_guard.as_mut().ok_or(Error::InvalidCredentials)?;
   if !session.db.remove(&name) {
@@ -115,7 +115,7 @@ fn remove_credentials(name: String, session_mutex: State<'_, Mutex<Option<UserSe
 
 #[tauri::command]
 fn add_credentials(name: String, username: String, password: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
-  log::info!("Adding credential, name={name}");
+  logs::info!("Adding credential", name);
   if name.is_empty() || username.is_empty() || password.is_empty() {
     return Err(Error::InvalidCredentials);
   }
@@ -129,14 +129,14 @@ fn add_credentials(name: String, username: String, password: String, session_mut
 #[tauri::command]
 fn logout(session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
   let mut session = session.lock()?;
-  log::info!("Logging out, logged_in={}", session.is_some());
+  logs::info!("Logging out", logged_in=session.is_some());
   *session = None;
   Ok(())
 }
 
 #[tauri::command]
 fn login(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
-  log::info!("Logging in, username={username}");
+  logs::info!("Logging in", username);
   if username.is_empty() || password.is_empty() {
     return Err(Error::InvalidCredentials);
   }
@@ -169,7 +169,7 @@ fn login(username: String, password: String, session: State<'_, Mutex<Option<Use
 
 #[tauri::command]
 fn create_account(username: String, password: String, session: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
-  log::info!("Creating account, username={username}");
+  logs::info!("Creating account", username);
   if username.is_empty() || password.is_empty() {
     return Err(Error::InvalidCredentials);
   }

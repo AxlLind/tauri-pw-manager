@@ -1,4 +1,5 @@
 use serde::{Serialize, ser::SerializeMap};
+use crate::logs;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Error {
@@ -33,7 +34,7 @@ impl Error {
 
 impl<T: std::error::Error> From<T> for Error {
   fn from(e: T) -> Self {
-    log::error!("Unexpected error: {}", e);
+    logs::error!("Unexpected error", e);
     Error::Unexpected
   }
 }

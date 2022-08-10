@@ -45,6 +45,57 @@ pub fn remove_old(log_folder: &Path) -> Result<(), Error> {
   Ok(())
 }
 
+#[doc(hidden)]
+macro_rules! __log_fmt_str {
+  ($prefix:literal $(,)*) => { "" };
+  ($prefix:literal, $k:ident=$v:expr, $($tokens:tt)*) => {
+    concat!($prefix, stringify!($k), "={}", $crate::logs::__log_fmt_str!(", ", $($tokens)*))
+  };
+  ($prefix:literal, $k:ident=?$v:expr, $($tokens:tt)*) => {
+    concat!($prefix, stringify!($k), "={:?}", $crate::logs::__log_fmt_str!(", ", $($tokens)*))
+  };
+  ($prefix:literal, $k:ident, $($tokens:tt)*) => {
+    concat!($prefix, stringify!($k), "={}", $crate::logs::__log_fmt_str!(", ", $($tokens)*))
+  };
+}
+
+#[doc(hidden)]
+macro_rules! __log_arguments {
+  ($level:expr, $fmt:expr $(, $args:expr)+ ; $(,)*) => { ::log::log!($level, $fmt, $($args),+) };
+  ($level:expr, $fmt:expr $(, $args:expr)* ; $_:ident=$v:expr, $($tokens:tt)*) => {
+    $crate::logs::__log_arguments!($level, $fmt $(, $args)*, $v ; $($tokens)*,)
+  };
+  ($level:expr, $fmt:expr $(, $args:expr)* ; $_:ident=?$v:expr, $($tokens:tt)*) => {
+    $crate::logs::__log_arguments!($level, $fmt $(, $args)*, $v ; $($tokens)*,)
+  };
+  ($level:expr, $fmt:expr $(, $args:expr)* ; $k:ident, $($tokens:tt)*) => {
+    $crate::logs::__log_arguments!($level, $fmt $(, $args)*, $k ; $($tokens)*,)
+  };
+}
+
+#[doc(hidden)]
+macro_rules! __log_impl {
+  ($level:expr, $msg:expr) => {
+    ::log::log!($level, "{}", $msg)
+  };
+  ($level:expr, $msg:literal, $($tokens:tt)+) => {
+    $crate::logs::__log_arguments!($level, concat!($msg, $crate::logs::__log_fmt_str!(": ", $($tokens)+,)) ; $($tokens)+,)
+  };
+}
+
+macro_rules! debug { ($($tokens:tt)+) => { $crate::logs::__log_impl!(::log::Level::Debug, $($tokens)+) } }
+macro_rules! info  { ($($tokens:tt)+) => { $crate::logs::__log_impl!(::log::Level::Info,  $($tokens)+) } }
+macro_rules! _warn { ($($tokens:tt)+) => { $crate::logs::__log_impl!(::log::Level::Warn,  $($tokens)+) } }
+macro_rules! error { ($($tokens:tt)+) => { $crate::logs::__log_impl!(::log::Level::Error, $($tokens)+) } }
+
+pub(crate) use __log_fmt_str;
+pub(crate) use __log_arguments;
+pub(crate) use __log_impl;
+#[allow(unused)] pub(crate) use debug;
+#[allow(unused)] pub(crate) use info;
+#[allow(unused)] pub(crate) use _warn as warn;
+#[allow(unused)] pub(crate) use error;
+
 #[cfg(test)]
 mod tests {
   use super::*;
