@@ -38,7 +38,7 @@ pub fn remove_old(log_folder: &Path) -> Result<(), Error> {
       Err(_) => continue,
     };
     if log_time < deletion_point {
-      log::info!("removing old log file: file={}", path.file_name().unwrap().to_string_lossy());
+      info!("removing old log file", file=path.file_name().unwrap().to_string_lossy());
       fs::remove_file(path)?;
     }
   }
@@ -48,15 +48,15 @@ pub fn remove_old(log_folder: &Path) -> Result<(), Error> {
 #[doc(hidden)]
 macro_rules! __log_arguments {
   ($level:expr, $prefix:literal, $fmt:expr $(, $args:expr)* ; $k:ident=$v:expr, $($tokens:tt)*) => {
-    $crate::logs::__log_arguments!($level, ", ", concat!($fmt, $prefix, stringify!($k), "={}") $(, $args)*, $v ; $($tokens)*,)
+    $crate::logs::__log_arguments!($level, ", ", concat!($fmt, $prefix, stringify!($k), "={}") $(, $args)*, $v ; $($tokens)*)
   };
   ($level:expr, $prefix:literal, $fmt:expr $(, $args:expr)* ; $k:ident=?$v:expr, $($tokens:tt)*) => {
-    $crate::logs::__log_arguments!($level, ", ", concat!($fmt, $prefix, stringify!($k), "={:?}") $(, $args)*, $v ; $($tokens)*,)
+    $crate::logs::__log_arguments!($level, ", ", concat!($fmt, $prefix, stringify!($k), "={:?}") $(, $args)*, $v ; $($tokens)*)
   };
   ($level:expr, $prefix:literal, $fmt:expr $(, $args:expr)* ; $k:ident, $($tokens:tt)*) => {
-    $crate::logs::__log_arguments!($level, ", ", concat!($fmt, $prefix, stringify!($k), "={}") $(, $args)*, $k ; $($tokens)*,)
+    $crate::logs::__log_arguments!($level, ", ", concat!($fmt, $prefix, stringify!($k), "={}") $(, $args)*, $k ; $($tokens)*)
   };
-  ($level:expr, $_:literal, $fmt:expr $(, $args:expr)* ; $(,)*) => {
+  ($level:expr, $_:literal, $fmt:expr $(, $args:expr)* ; $(,)?) => {
     ::log::log!($level, $fmt, $($args),*)
   };
 }
@@ -64,7 +64,7 @@ macro_rules! __log_arguments {
 #[doc(hidden)]
 macro_rules! __log_impl {
   ($level:expr, $msg:literal, $($tokens:tt)*) => {
-    $crate::logs::__log_arguments!($level, ": ", $msg ; $($tokens)*,)
+    $crate::logs::__log_arguments!($level, ": ", $msg ; $($tokens)*)
   };
 }
 
