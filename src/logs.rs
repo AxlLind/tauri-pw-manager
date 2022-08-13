@@ -73,12 +73,8 @@ macro_rules! info  { ($($tokens:tt)+) => { $crate::logs::__log_impl!(::log::Leve
 macro_rules! _warn { ($($tokens:tt)+) => { $crate::logs::__log_impl!(::log::Level::Warn,  $($tokens)+,) } }
 macro_rules! error { ($($tokens:tt)+) => { $crate::logs::__log_impl!(::log::Level::Error, $($tokens)+,) } }
 
-pub(crate) use __log_arguments;
-pub(crate) use __log_impl;
-#[allow(unused)] pub(crate) use debug;
-#[allow(unused)] pub(crate) use info;
-#[allow(unused)] pub(crate) use _warn as warn;
-#[allow(unused)] pub(crate) use error;
+pub(crate) use { __log_impl, __log_arguments };
+#[allow(unused)] pub(crate) use { debug, info, _warn as warn, error };
 
 #[cfg(test)]
 mod tests {
