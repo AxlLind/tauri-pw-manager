@@ -16,7 +16,7 @@ pub fn initialize(logs_folder: &Path) -> Result<(), Error> {
         Local::now().format("%Y-%m-%d %H:%M:%S"),
         record.level(),
         message,
-      ))
+      ));
     })
     .level(if cfg!(debug_assertions) { log::LevelFilter::Debug } else { LevelFilter::Info })
     .chain(std::io::stdout())

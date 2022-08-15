@@ -13,21 +13,21 @@ pub enum Error {
 impl Error {
   fn message(&self) -> &'static str {
     match self {
-      Error::InvalidCredentials => "invalid credentials",
-      Error::InvalidDatabase => "corrupt key database",
-      Error::InvalidParameter => "invalid parameter",
-      Error::UsernameTaken => "username already registered",
-      Error::Unexpected => "unexpected error occurred"
+      Self::InvalidCredentials => "invalid credentials",
+      Self::InvalidDatabase => "corrupt key database",
+      Self::InvalidParameter => "invalid parameter",
+      Self::UsernameTaken => "username already registered",
+      Self::Unexpected => "unexpected error occurred"
     }
   }
 
   fn key(&self) -> &'static str {
     match self {
-      Error::InvalidCredentials => "invalid_credentials",
-      Error::InvalidDatabase => "invalid_database",
-      Error::InvalidParameter => "invalid_parameter",
-      Error::UsernameTaken => "username_taken",
-      Error::Unexpected => "unexpected",
+      Self::InvalidCredentials => "invalid_credentials",
+      Self::InvalidDatabase => "invalid_database",
+      Self::InvalidParameter => "invalid_parameter",
+      Self::UsernameTaken => "username_taken",
+      Self::Unexpected => "unexpected",
     }
   }
 }
@@ -35,7 +35,7 @@ impl Error {
 impl<T: std::error::Error> From<T> for Error {
   fn from(e: T) -> Self {
     logs::error!("Unexpected error", e);
-    Error::Unexpected
+    Self::Unexpected
   }
 }
 
