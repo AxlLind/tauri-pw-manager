@@ -47,15 +47,19 @@ pub fn remove_old(log_folder: &Path) -> Result<(), Error> {
 
 #[doc(hidden)]
 macro_rules! __log_arguments {
+  // Parse a `key=value` argument, into `"key={}", value`
   ($level:expr, $prefix:literal, $fmt:expr $(, $args:expr)* ; $k:ident=$v:expr, $($tokens:tt)*) => {
     $crate::logs::__log_arguments!($level, ", ", concat!($fmt, $prefix, stringify!($k), "={}") $(, $args)*, $v ; $($tokens)*)
   };
+  // Parse a `key=?value` argument, into `"key={:?}", value`
   ($level:expr, $prefix:literal, $fmt:expr $(, $args:expr)* ; $k:ident=?$v:expr, $($tokens:tt)*) => {
     $crate::logs::__log_arguments!($level, ", ", concat!($fmt, $prefix, stringify!($k), "={:?}") $(, $args)*, $v ; $($tokens)*)
   };
+  // Parse a `key` argument, into `"key={}", key`
   ($level:expr, $prefix:literal, $fmt:expr $(, $args:expr)* ; $k:ident, $($tokens:tt)*) => {
     $crate::logs::__log_arguments!($level, ", ", concat!($fmt, $prefix, stringify!($k), "={}") $(, $args)*, $k ; $($tokens)*)
   };
+  // Output the final log expression
   ($level:expr, $_:literal, $fmt:expr $(, $args:expr)* ; $(,)?) => {
     ::log::log!($level, $fmt, $($args),*)
   };
