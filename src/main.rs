@@ -29,7 +29,6 @@ pub static APP_FOLDER: Lazy<PathBuf> = Lazy::new(|| {
 #[derive(Default)]
 struct UserSession {
   file: PathBuf,
-  salt: [u8; 12],
   nonce: [u8; 16],
   encrypted_key: [u8; 32],
   key: [u8; 32],
@@ -38,9 +37,8 @@ struct UserSession {
 
 fn save_database(session: &UserSession) -> Result<(), Error> {
   let encrypted_blob = EncryptedBlob::encrypt(&session.db, &session.key)?;
-  let file_content = session.salt.iter()
+  let file_content = session.nonce.iter()
     .copied()
-    .chain(session.nonce)
     .chain(session.encrypted_key)
     .chain(encrypted_blob.bytes())
     .collect::<Vec<_>>();
@@ -149,21 +147,20 @@ fn login(username: String, password: String, session: State<'_, Mutex<Option<Use
     return Err(Error::InvalidCredentials);
   }
   let file_contents = fs::read(&file)?;
-  if file_contents.len() < 12+16+32+1 {
+  if file_contents.len() < 16+32+1 {
     return Err(Error::InvalidDatabase);
   }
-  let salt: [u8; 12] = file_contents[..12].try_into().unwrap();
-  let nonce: [u8; 16] = file_contents[12..12+16].try_into().unwrap();
-  let encrypted_key: [u8; 32] = file_contents[12+16..12+16+32].try_into().unwrap();
-  let master_key = cryptography::pbkdf2_hmac(password.as_bytes(), &salt);
+  let nonce: [u8; 16] = file_contents[..16].try_into().unwrap();
+  let encrypted_key: [u8; 32] = file_contents[16..16+32].try_into().unwrap();
+  let master_key = cryptography::pbkdf2_hmac(password.as_bytes(), username.as_bytes());
   let key = cryptography::decrypt_key(&master_key, &encrypted_key, &nonce).map_err(|_| Error::InvalidCredentials)?;
-  let db: CredentialsDatabase = EncryptedBlob::from_bytes(&file_contents[12+16+32..])?
+  let db: CredentialsDatabase = EncryptedBlob::from_bytes(&file_contents[16+32..])?
     .decrypt(&key)
     .map_err(|_| Error::InvalidCredentials)?;
   if db.username() != username {
     return Err(Error::InvalidDatabase);
   }
-  *session = Some(UserSession { file, salt, nonce, encrypted_key, key, db });
+  *session = Some(UserSession { file, nonce, encrypted_key, key, db });
   Ok(())
 }
 
@@ -181,12 +178,11 @@ fn create_account(username: String, password: String, session: State<'_, Mutex<O
   if file.exists() {
     return Err(Error::UsernameTaken);
   }
-  let salt = cryptography::random_bytes::<12>();
-  let master_key = cryptography::pbkdf2_hmac(password.as_bytes(), &salt);
+  let master_key = cryptography::pbkdf2_hmac(password.as_bytes(), username.as_bytes());
   let key = cryptography::random_bytes::<32>();
   let (encrypted_key, nonce) = cryptography::encrypt_key(&master_key, &key)?;
   let db = CredentialsDatabase::new(username);
-  *session = Some(UserSession { file, salt, nonce, encrypted_key, key, db });
+  *session = Some(UserSession { file, nonce, encrypted_key, key, db });
   save_database(session.as_ref().unwrap())?;
   Ok(())
 }
