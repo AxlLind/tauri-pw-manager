@@ -5,6 +5,9 @@ A desktop password manager using Tauri, with a backend in Rust and a frontend in
 
 ![login page](./assets/login-page.png)
 
+## Cryptography architecture
+![cryptography architecture](./assets/crypto-architecture.png)
+
 ## usage
 Assumes you have the [Rust toolchain](https://rustup.rs/) and [npm](https://www.npmjs.com/) installed.
 
