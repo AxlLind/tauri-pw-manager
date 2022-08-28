@@ -19,12 +19,14 @@ export function SignUpPage() {
   };
 
   return (
-    <Stack spacing={3} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
-      <Typography variant='h5'>Create an account</Typography>
-      <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />
-      <PasswordField label='Master Password' value={password} onChange={setPassword} />
-      <PasswordField label='Retype Password' value={passwordCopy} onChange={setPasswordCopy} />
-      <Button variant='contained' onClick={onClickLogin}>Create</Button>
+    <Stack height='100vh' alignItems='center'>
+      <Typography variant='h5' marginTop='2rem'>Create an account</Typography>
+      <Stack margin='auto' spacing={3} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
+        <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />
+        <PasswordField label='Master Password' value={password} onChange={setPassword} />
+        <PasswordField label='Retype Password' value={passwordCopy} onChange={setPasswordCopy} />
+        <Button variant='contained' onClick={onClickLogin}>Create</Button>
+      </Stack>
     </Stack>
   );
 }

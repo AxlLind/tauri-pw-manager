@@ -66,10 +66,10 @@ export function StartPage() {
   }
 
   return <>
-    <Stack spacing={1} alignItems='center'>
+    <Stack height='100vh' alignItems='center'>
       <Typography variant='h5' marginTop='2rem'>Credentials</Typography>
-      {
-        credentials.length > 0
+      <Stack margin='auto' spacing={1} alignItems='center'>
+        {credentials.length > 0
           ? credentials.sort().map(name =>
             <Paper sx={{ width: '30rem', display: 'flex', padding: '0.5rem 1rem' }} elevation={4}>
               <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
@@ -88,7 +88,8 @@ export function StartPage() {
             </Paper>
           )
           : "Press the '+' button to add credentials"
-      }
+        }
+      </Stack>
     </Stack>
     <Tooltip title='Add credentials' placement='left'>
       <Fab children={<Add/>} color='primary' sx={{ position: 'fixed', bottom: 20, right: 20 }} onClick={() => goToPage('add')}/>

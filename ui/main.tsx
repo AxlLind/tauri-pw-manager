@@ -66,11 +66,7 @@ function App() {
   return <>
     {page !== 'login' && <IconButton children={<ArrowBack/>} sx={{ position: 'fixed', top: 10, left: 10 }} onClick={() => goToPage(backPages[page] as Page)}/>}
     <PageContext.Provider value={{ goToPage, showAlert }}>
-      <Box height='100vh' display='flex'>
-        <Box margin='auto'>
-          {React.createElement(pageComponents[page])}
-        </Box>
-      </Box>
+      {React.createElement(pageComponents[page])}
     </PageContext.Provider>
     <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
       <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>

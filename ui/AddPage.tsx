@@ -33,17 +33,19 @@ export function AddPage() {
   };
 
   return <>
-    <Stack spacing={3} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
-      <Typography variant='h5'>Add Credentials</Typography>
-      <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
-      <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
-      <Box>
-        <PasswordField label='Password' value={password} onChange={setPassword}/>
-        <Tooltip title='Generate password' disableHoverListener onMouseEnter={() => setOpenToolip(true)} onMouseLeave={() => setOpenToolip(false)} open={!openDialog && openTooltip}>
-          <IconButton children={<Loop/>} sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenDialog(true)}/>
-        </Tooltip>
-      </Box>
-      <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
+    <Stack height='100vh' alignItems='center'>
+      <Typography variant='h5' marginTop='2rem'>Add Credentials</Typography>
+      <Stack margin='auto' spacing={3} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
+        <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>
+        <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)}/>
+        <Box>
+          <PasswordField label='Password' value={password} onChange={setPassword}/>
+          <Tooltip title='Generate password' disableHoverListener onMouseEnter={() => setOpenToolip(true)} onMouseLeave={() => setOpenToolip(false)} open={!openDialog && openTooltip}>
+            <IconButton children={<Loop/>} sx={{position: 'absolute', transform: 'translateY(8px)'}} onClick={() => setOpenDialog(true)}/>
+          </Tooltip>
+        </Box>
+        <Button variant='contained' onClick={onClickAddCredentials}>Add</Button>
+      </Stack>
     </Stack>
     <Dialog open={openDialog} onClose={() => setOpenDialog(false)} onKeyDown={e => e.key == 'Enter' && setOpenDialog(false)}>
       <DialogTitle textAlign='center'>Generate Password</DialogTitle>
