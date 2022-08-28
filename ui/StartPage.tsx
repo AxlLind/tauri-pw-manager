@@ -67,23 +67,25 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
     <Stack spacing={1} alignItems='center'>
       <Typography variant='h5' marginTop='2rem'>Credentials</Typography>
       {
-        credentials.sort().map(name =>
-          <Paper sx={{ width: '30rem', display: 'flex', padding: '0.5rem 1rem' }} elevation={4}>
-            <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
-            <Tooltip title='copy username'>
-              <IconButton children={<Person/>} onClick={() => copyValue(name, 'username')}/>
-            </Tooltip>
-            <Tooltip title='copy password'>
-              <IconButton children={<Key/>} onClick={() => copyValue(name, 'password')}/>
-            </Tooltip>
-            <Tooltip title='delete credentials'>
-              <IconButton children={<Delete/>} onClick={() => setCredentialsToRemove(name)}/>
-            </Tooltip>
-            <Tooltip title='view credentials'>
-              <IconButton children={<MoreHoriz/>} onClick={() => setCredentialsToShow(name)}/>
-            </Tooltip>
-          </Paper>
-        )
+        credentials.length > 0
+          ? credentials.sort().map(name =>
+            <Paper sx={{ width: '30rem', display: 'flex', padding: '0.5rem 1rem' }} elevation={4}>
+              <Typography alignSelf='center' flexGrow={1}>{name}</Typography>
+              <Tooltip title='copy username'>
+                <IconButton children={<Person/>} onClick={() => copyValue(name, 'username')}/>
+              </Tooltip>
+              <Tooltip title='copy password'>
+                <IconButton children={<Key/>} onClick={() => copyValue(name, 'password')}/>
+              </Tooltip>
+              <Tooltip title='delete credentials'>
+                <IconButton children={<Delete/>} onClick={() => setCredentialsToRemove(name)}/>
+              </Tooltip>
+              <Tooltip title='view credentials'>
+                <IconButton children={<MoreHoriz/>} onClick={() => setCredentialsToShow(name)}/>
+              </Tooltip>
+            </Paper>
+          )
+          : "Press the '+' button to add credentials"
       }
     </Stack>
     <Tooltip title='Add credentials' placement='left'>
