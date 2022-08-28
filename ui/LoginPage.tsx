@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { Stack, Button, TextField, Typography } from '@mui/material';
-import { useAsyncEffect, PageProps, PasswordField, AppIcon } from './utils';
+import { useContext, useState } from 'react';
+import { Stack, Button, TextField, Typography, Box } from '@mui/material';
+import { useAsyncEffect, PasswordField, AppIcon, PageContext } from './utils';
 import { login, logout } from './backend';
 
-export function LoginPage({ goToPage, showAlert }: PageProps) {
+export function LoginPage() {
+  const { goToPage, showAlert } = useContext(PageContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 

@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext } from 'react';
 import { IconButton, AlertColor, TextField, InputAdornment, Tooltip, createSvgIcon } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 export type Page = 'login' | 'signup' | 'start' | 'add';
 
 export type PageProps = { goToPage: (p: Page) => void, showAlert: (m: string, severity?: AlertColor) => void };
+
+export const PageContext = createContext<PageProps>({} as PageProps);
 
 export function useAsyncEffect(effect: () => Promise<any>, deps: any[]) {
   useEffect(() => { effect().catch(console.error); }, deps)

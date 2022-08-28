@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
 import { Loop } from '@mui/icons-material';
-import { PageProps, PasswordField, useAsyncEffect } from './utils';
+import { PageContext, PasswordField, useAsyncEffect } from './utils';
 import { add_credentials, generate_password } from './backend';
 
 const pwCharColor = (c: string) => '!@#$%^&*'.includes(c) ? '#57c7ff' : '0123456789'.includes(c) ? '#ffbc58' : '#ffffff';
 
-export function AddPage({ goToPage, showAlert }: PageProps) {
+export function AddPage() {
+  const { goToPage, showAlert } = useContext(PageContext);
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

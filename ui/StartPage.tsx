@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { Stack, Fab, Typography, IconButton, Paper, Tooltip, Dialog, DialogContent, DialogActions, Button, DialogTitle, AlertColor, Divider } from '@mui/material';
+import { useContext, useState } from 'react';
+import { Stack, Fab, Typography, IconButton, Paper, Tooltip, Dialog, DialogContent, DialogActions, Button, DialogTitle, Divider, Box } from '@mui/material';
 import { Add, Person, Key, Delete, MoreHoriz } from '@mui/icons-material';
-import { useAsyncEffect, PageProps } from './utils';
+import { useAsyncEffect, PageContext } from './utils';
 import { fetch_credentials, remove_credentials, copy_to_clipboard, get_credentials_info, Credentials } from './backend';
 
-function CredentialsDialog({ name, onClose, showAlert }: { name: string, onClose: () => void, showAlert: (m: string, severity?: AlertColor) => void }) {
+function CredentialsDialog({ name, onClose }: { name: string, onClose: () => void }) {
+  const { showAlert } = useContext(PageContext);
   const [{ username, password }, setCredentials] = useState<Credentials>({ username: '', password: '' });
 
   useAsyncEffect(async () => {
@@ -37,7 +38,8 @@ function CredentialsDialog({ name, onClose, showAlert }: { name: string, onClose
   );
 }
 
-export function StartPage({ goToPage, showAlert }: PageProps) {
+export function StartPage() {
+  const { goToPage, showAlert } = useContext(PageContext);
   const [credentials, setCredentials] = useState([] as string[]);
   const [credentialsToRemove, setCredentialsToRemove] = useState('');
   const [credentialsToShow, setCredentialsToShow] = useState('');
@@ -98,6 +100,6 @@ export function StartPage({ goToPage, showAlert }: PageProps) {
         <Button onClick={() => setCredentialsToRemove('')}>Cancel</Button>
       </DialogActions>
     </Dialog>
-    <CredentialsDialog name={credentialsToShow} onClose={() => setCredentialsToShow('')} showAlert={showAlert}/>
+    <CredentialsDialog name={credentialsToShow} onClose={() => setCredentialsToShow('')}/>
   </>;
 }

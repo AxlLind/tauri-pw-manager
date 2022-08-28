@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Stack, Button, TextField, Typography } from '@mui/material';
-import { PageProps, PasswordField } from './utils';
+import { PageContext, PageProps, PasswordField } from './utils';
 import { create_account } from './backend';
 
-export function SignUpPage({ goToPage, showAlert }: PageProps) {
+export function SignUpPage() {
+  const { goToPage, showAlert } = useContext(PageContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCopy, setPasswordCopy] = useState('');

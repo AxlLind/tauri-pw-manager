@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom/client';
 import React, { useState } from 'react';
 import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor, IconButton, Box } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
-import { Page } from './utils';
+import { Page, PageContext } from './utils';
 import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
 import { StartPage } from './StartPage';
@@ -65,11 +65,13 @@ function App() {
   };
   return <>
     {page !== 'login' && <IconButton children={<ArrowBack/>} sx={{ position: 'fixed', top: 10, left: 10 }} onClick={() => goToPage(backPages[page] as Page)}/>}
-    <Box height='100vh' display='flex'>
-      <Box margin='auto'>
-        {React.createElement(pageComponents[page], { goToPage, showAlert })}
+    <PageContext.Provider value={{ goToPage, showAlert }}>
+      <Box height='100vh' display='flex'>
+        <Box margin='auto'>
+          {React.createElement(pageComponents[page])}
+        </Box>
       </Box>
-    </Box>
+    </PageContext.Provider>
     <Snackbar open={showMessage} autoHideDuration={3000} onClose={() => setShowMessage(false)}>
       <Alert severity={severity} onClose={() => setShowMessage(false)}>{m}</Alert>
     </Snackbar>
