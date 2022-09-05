@@ -12,9 +12,7 @@
   "tauri": {
     "allowlist": {
       "window": {
-        "startDragging": true,
-        "maximize": true,
-        "unmaximize": true
+        "startDragging": true
       }
     },
     "windows": [

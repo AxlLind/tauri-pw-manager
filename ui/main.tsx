@@ -1,7 +1,8 @@
 import ReactDOM from 'react-dom/client';
 import React, { useState } from 'react';
-import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor, IconButton, Box } from '@mui/material';
-import { ArrowBack } from '@mui/icons-material';
+import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor, IconButton, Box, Tooltip } from '@mui/material';
+import { ArrowBack, Close, Fullscreen, Minimize } from '@mui/icons-material';
+import { window_close, window_minimize, window_toggle_maximized } from './backend';
 import { Page, PageContext } from './utils';
 import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
@@ -48,11 +49,19 @@ const theme = createTheme({
   }
 });
 
-function TitleBar() {
-  return (
-    <Box data-tauri-drag-region position='fixed' height='3rem' width='100vw' />
-  );
-}
+const TitleBar = () => (
+  <Box data-tauri-drag-region position='fixed' height='3rem' width='100vw' display='flex' justifyContent='flex-end' paddingRight='5px'>
+    <Tooltip title='Minimize'>
+      <IconButton size='small' disableRipple tabIndex={-1} children={<Minimize/>} onClick={window_minimize} />
+    </Tooltip>
+    <Tooltip title='Maximize'>
+      <IconButton size='small' disableRipple tabIndex={-1} children={<Fullscreen/>} onClick={window_toggle_maximized} />
+    </Tooltip>
+    <Tooltip title='Close'>
+      <IconButton size='small' disableRipple tabIndex={-1} children={<Close/>} onClick={window_close} />
+    </Tooltip>
+  </Box>
+);
 
 const backPages = { login: undefined, signup: 'login', start: 'login', add: 'start' };
 const pageComponents = { login: LoginPage, signup: SignUpPage, start: StartPage, add: AddPage };

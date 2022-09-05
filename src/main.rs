@@ -47,6 +47,25 @@ fn save_database(session: &UserSession) -> Result<(), Error> {
 }
 
 #[tauri::command]
+fn window_close(window: tauri::Window) -> Result<(), Error> {
+  logs::debug!("Closing window");
+  window.close().map_err(|_| Error::Unexpected)
+}
+
+#[tauri::command]
+fn window_minimize(window: tauri::Window) -> Result<(), Error> {
+  logs::debug!("Minimizing window");
+  window.minimize().map_err(|_| Error::Unexpected)
+}
+
+#[tauri::command]
+fn window_toggle_maximized(window: tauri::Window) -> Result<(), Error> {
+  let maximized = window.is_maximized()?;
+  logs::debug!("Toggling window maximize", maximized);
+  if maximized { window.unmaximize() } else { window.maximize() }.map_err(|_| Error::Unexpected)
+}
+
+#[tauri::command]
 fn copy_to_clipboard(name: String, thing: String, session_mutex: State<'_, Mutex<Option<UserSession>>>) -> Result<(), Error> {
   logs::debug!("Copying to clipboard", name, thing);
   let mut session_guard = session_mutex.lock()?;
@@ -208,6 +227,9 @@ fn main() {
       remove_credentials,
       generate_password,
       copy_to_clipboard,
+      window_close,
+      window_minimize,
+      window_toggle_maximized,
     ])
     .menu(if cfg!(target_os = "macos") {
       tauri::Menu::os_default(&context.package_info().name)
