@@ -33,7 +33,7 @@ export function AddPage() {
   };
 
   return <>
-    <Stack height='100vh' alignItems='center'>
+    <Stack height='100vh' alignItems='center' bgcolor='#282a36' borderRadius='10px' border='2px solid #404353'>
       <Typography variant='h5' marginTop='2rem'>Add Credentials</Typography>
       <Stack margin='auto' spacing={3} alignItems='center' onKeyDown={e => !openDialog && e.key == 'Enter' && onClickAddCredentials()}>
         <TextField label='Name' value={name} onChange={e => setName(e.target.value)}/>

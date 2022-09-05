@@ -66,7 +66,7 @@ export function StartPage() {
   }
 
   return <>
-    <Stack height='100vh' alignItems='center'>
+    <Stack height='100vh' alignItems='center' bgcolor='#282a36' borderRadius='10px' border='2px solid #404353'>
       <Typography variant='h5' marginTop='2rem'>Credentials</Typography>
       <Stack margin='auto' spacing={1} alignItems='center'>
         {credentials.length > 0

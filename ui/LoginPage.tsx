@@ -19,7 +19,7 @@ export function LoginPage() {
   };
 
   return (
-    <Box height='100vh' display='flex'>
+    <Box height='100vh' display='flex' bgcolor='#282a36' borderRadius='10px' border='2px solid #404353'>
       <Stack margin='auto' spacing={3} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
         <Stack direction='row' alignItems='center'>
           <Typography variant='h2'>Scop</Typography>

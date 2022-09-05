@@ -19,7 +19,7 @@ export function SignUpPage() {
   };
 
   return (
-    <Stack height='100vh' alignItems='center'>
+    <Stack height='100vh' alignItems='center' bgcolor='#282a36' borderRadius='10px' border='2px solid #404353'>
       <Typography variant='h5' marginTop='2rem'>Create an account</Typography>
       <Stack margin='auto' spacing={3} alignItems='center' onKeyDown={e => e.key == 'Enter' && onClickLogin()}>
         <TextField label='Username' value={username} onChange={e => setUsername(e.target.value)} />

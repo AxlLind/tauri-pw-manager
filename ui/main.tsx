@@ -14,7 +14,7 @@ const theme = createTheme({
   palette: {
     mode: 'dark',
     background: {
-      default: '#282a36',
+      default: 'transparent',
       paper: '#2c2f3d',
     },
     text: {
@@ -48,6 +48,12 @@ const theme = createTheme({
   }
 });
 
+function TitleBar() {
+  return (
+    <Box data-tauri-drag-region position='fixed' height='3rem' width='100vw' />
+  );
+}
+
 const backPages = { login: undefined, signup: 'login', start: 'login', add: 'start' };
 const pageComponents = { login: LoginPage, signup: SignUpPage, start: StartPage, add: AddPage };
 
@@ -64,6 +70,7 @@ function App() {
     setShowMessage(true);
   };
   return <>
+    <TitleBar/>
     {page !== 'login' && <IconButton children={<ArrowBack/>} sx={{ position: 'fixed', top: 10, left: 10 }} onClick={() => goToPage(backPages[page] as Page)}/>}
     <PageContext.Provider value={{ goToPage, showAlert }}>
       {React.createElement(pageComponents[page])}

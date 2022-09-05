@@ -10,11 +10,20 @@
     "version": "0.1.0"
   },
   "tauri": {
+    "allowlist": {
+      "window": {
+        "startDragging": true,
+        "maximize": true,
+        "unmaximize": true
+      }
+    },
     "windows": [
       {
         "title": "tauri pw manager",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "decorations": false,
+        "transparent": true
       }
     ],
     "bundle": {
