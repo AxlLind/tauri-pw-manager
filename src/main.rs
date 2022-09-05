@@ -59,10 +59,11 @@ fn window_minimize(window: tauri::Window) -> Result<(), Error> {
 }
 
 #[tauri::command]
-fn window_toggle_maximized(window: tauri::Window) -> Result<(), Error> {
-  let maximized = window.is_maximized()?;
-  logs::debug!("Toggling window maximize", maximized);
-  if maximized { window.unmaximize() } else { window.maximize() }.map_err(|_| Error::Unexpected)
+fn window_toggle_fullscreen(window: tauri::Window) -> Result<(), Error> {
+  let fullscreen = window.is_fullscreen()?;
+  logs::debug!("Toggling window fullscreen", fullscreen);
+  window.set_fullscreen(!fullscreen)?;
+  Ok(())
 }
 
 #[tauri::command]
@@ -229,7 +230,7 @@ fn main() {
       copy_to_clipboard,
       window_close,
       window_minimize,
-      window_toggle_maximized,
+      window_toggle_fullscreen,
     ])
     .menu(if cfg!(target_os = "macos") {
       tauri::Menu::os_default(&context.package_info().name)

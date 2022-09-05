@@ -21,4 +21,4 @@ export const generate_password = (length: number, types: string[]) => call<strin
 export const copy_to_clipboard = (name: string, thing: 'username' | 'password') => call('copy_to_clipboard', { name, thing });
 export const window_close = () => call('window_close');
 export const window_minimize = () => call('window_minimize');
-export const window_toggle_maximized = () => call('window_toggle_maximized');
+export const window_toggle_fullscreen = () => call('window_toggle_fullscreen');

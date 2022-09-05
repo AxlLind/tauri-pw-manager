@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom/client';
 import React, { useState } from 'react';
 import { CssBaseline, ThemeProvider, createTheme, Snackbar, Alert, AlertColor, IconButton, Box, Tooltip } from '@mui/material';
 import { ArrowBack, Close, Fullscreen, Minimize } from '@mui/icons-material';
-import { window_close, window_minimize, window_toggle_maximized } from './backend';
+import { window_close, window_minimize, window_toggle_fullscreen } from './backend';
 import { Page, PageContext } from './utils';
 import { LoginPage } from './LoginPage';
 import { SignUpPage } from './SignUpPage';
@@ -55,7 +55,7 @@ const TitleBar = () => (
       <IconButton size='small' disableRipple tabIndex={-1} children={<Minimize/>} onClick={window_minimize} />
     </Tooltip>
     <Tooltip title='Maximize'>
-      <IconButton size='small' disableRipple tabIndex={-1} children={<Fullscreen/>} onClick={window_toggle_maximized} />
+      <IconButton size='small' disableRipple tabIndex={-1} children={<Fullscreen/>} onClick={window_toggle_fullscreen} />
     </Tooltip>
     <Tooltip title='Close'>
       <IconButton size='small' disableRipple tabIndex={-1} children={<Close/>} onClick={window_close} />
