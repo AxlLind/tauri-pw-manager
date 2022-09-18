@@ -6,7 +6,7 @@ default-run = "pw-manager"
 edition = "2021"
 
 [dependencies]
-tauri = { version = "1.0", features = ["window-start-dragging"] }
+tauri = { version = "1.1", features = ["window-start-dragging"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 openssl = "0.10"
@@ -20,7 +20,7 @@ chrono = "0.4"
 tempfile = "3"
 
 [build-dependencies]
-tauri-build = { version = "1.0", features = [] }
+tauri-build = { version = "1.1", features = ["config-toml"] }
 
 [features]
 default = [ "custom-protocol" ]

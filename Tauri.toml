@@ -1,0 +1,30 @@
+[build]
+beforeDevCommand = "npm run --silent dev"
+devPath = "http://127.0.0.1:3000"
+beforeBuildCommand = "npm run --silent build"
+distDir = "./ui/build"
+
+[package]
+productName = "pw-manager"
+version = "0.1.0"
+
+[tauri.allowlist.window]
+startDragging = true
+
+[[tauri.windows]]
+title = "tauri pw manager"
+width = 800
+height = 600
+decorations = false
+transparent = true
+
+[tauri.bundle]
+identifier = "tauri.pw.manager"
+targets = "all"
+icon = [
+  "assets/32x32.png",
+  "assets/128x128.png",
+  "assets/128x128@2x.png",
+  "assets/icon.icns",
+  "assets/icon.ico"
+]
