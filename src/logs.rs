@@ -34,7 +34,7 @@ pub fn remove_old(log_folder: &Path) -> Result<(), Error> {
     }
     let file_stem = path.file_stem().unwrap().to_string_lossy();
     let log_time = match NaiveDate::parse_from_str(&file_stem, "%Y-%m-%d") {
-      Ok(d) => d.and_hms(0, 0, 0),
+      Ok(d) => d.and_hms_opt(0, 0, 0).unwrap(),
       Err(_) => continue,
     };
     if log_time < deletion_point {
